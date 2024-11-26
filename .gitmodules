@@ -1,0 +1,10 @@
+[submodule "customWarning"]
+	path = customWarning
+	url = git@github.com:lvbealr/customWarning.git
+[submodule "binaryTree"]
+	path = binaryTree
+	url = git@github.com:lvbealr/binaryTree.git
+	branch = uniBinaryTree
+[submodule "colorPrint"]
+	path = colorPrint
+	url = git@github.com:lvbealr/colorPrint.git
