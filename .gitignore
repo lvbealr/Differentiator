@@ -34,3 +34,5 @@
 # Trash
 .vscode/
 build/
+temp.dot
+formula.txt
