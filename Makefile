@@ -1,6 +1,6 @@
 CXX           = g++
 
-DIFF_SRC      = main.cpp differentiator.cpp
+DIFF_SRC      = main.cpp diffDump.cpp
 
 TARGET        = Differentiator
 

@@ -1,6 +1,8 @@
 #include <cstdio>
 
 #include "differentiator.h"
+#include "diffDump.h"
+#include "diffIO.h"
 
 int main(int argc, char *argv[]) {
   Differentiator Diff = {};
@@ -10,14 +12,14 @@ int main(int argc, char *argv[]) {
   parseConsole      (argc, argv, &Diff.diffTree);
   binaryTreeSetInfo (&Diff.diffTree);
 
-  Diff.diffTree.root->data.type                      = NUMERICAL_NODE;
-  Diff.diffTree.root->data.nodeValue.value           = 228;
+  Diff.diffTree.root->data.type                      = OPERATION_NODE;;
+  Diff.diffTree.root->data.nodeValue.op              = {.name = ADD, .symbol = (char *)"+", .priority = 2};
 
   DIFF_DUMP_(&Diff.diffTree);
 
   nodeLink(&Diff.diffTree, Diff.diffTree.root, LEFT);
-  Diff.diffTree.root->left->data.type                = OPERATION_NODE;
-  Diff.diffTree.root->left->data.nodeValue.op        = {.name = SQRT, .symbol = (char *)"sqrt", .priority = 2};
+  Diff.diffTree.root->left->data.type                = NUMERICAL_NODE;
+  Diff.diffTree.root->left->data.nodeValue.value     = 100;
 
   DIFF_DUMP_(&Diff.diffTree);
 
@@ -25,9 +27,11 @@ int main(int argc, char *argv[]) {
   Diff.diffTree.root->right->data.type               = VARIABLE_NODE;
   Diff.diffTree.root->right->data.nodeValue.varIndex = 'x';
 
-  DIFF_DUMP_(&Diff.diffTree);
-
   DIFF_SAVE_DUMP_IMAGE(&Diff.diffTree);
+
+  FILE *io = fopen("IO/output.txt", "w");
+
+  callPrintBinaryTree(&Diff.diffTree, INFIX, io);
 
   return 0;
 }
