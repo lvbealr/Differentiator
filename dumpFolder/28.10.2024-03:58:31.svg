@@ -9,25 +9,25 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 214)">
 <title>diffTree</title>
 <polygon fill="white" stroke="none" points="-4,4 -4,-214 365,-214 365,4 -4,4"/>
-<!-- p0x5a7e413522b0 -->
+<!-- p0x5f82fe62e2b0 -->
 <g id="node1" class="node">
-<title>p0x5a7e413522b0</title>
+<title>p0x5f82fe62e2b0</title>
 <path fill="none" stroke="purple" d="M83,-123.5C83,-123.5 283,-123.5 283,-123.5 289,-123.5 295,-129.5 295,-135.5 295,-135.5 295,-197.5 295,-197.5 295,-203.5 289,-209.5 283,-209.5 283,-209.5 83,-209.5 83,-209.5 77,-209.5 71,-203.5 71,-197.5 71,-197.5 71,-135.5 71,-135.5 71,-129.5 77,-123.5 83,-123.5"/>
-<text text-anchor="middle" x="183" y="-196" font-family="JetBrains Mono" font-size="10.00">[0x5a7e413522b0]</text>
+<text text-anchor="middle" x="183" y="-196" font-family="JetBrains Mono" font-size="10.00">[0x5f82fe62e2b0]</text>
 <polyline fill="none" stroke="purple" points="71,-188 295,-188"/>
 <text text-anchor="middle" x="183" y="-174.5" font-family="JetBrains Mono" font-size="10.00">type = OPERATION_NODE [&#45;1]</text>
 <polyline fill="none" stroke="purple" points="71,-166.5 295,-166.5"/>
-<text text-anchor="middle" x="183" y="-153" font-family="JetBrains Mono" font-size="10.00">data = [ADD]</text>
+<text text-anchor="middle" x="183" y="-153" font-family="JetBrains Mono" font-size="10.00">data = [+]</text>
 <polyline fill="none" stroke="purple" points="71,-145 295,-145"/>
-<text text-anchor="middle" x="127" y="-131.5" font-family="JetBrains Mono" font-size="10.00">[0x5a7e41352fe0]</text>
+<text text-anchor="middle" x="127" y="-131.5" font-family="JetBrains Mono" font-size="10.00">[0x5f82fe62efd0]</text>
 <polyline fill="none" stroke="purple" points="183,-123.5 183,-145"/>
-<text text-anchor="middle" x="239" y="-131.5" font-family="JetBrains Mono" font-size="10.00">[0x5a7e41353290]</text>
+<text text-anchor="middle" x="239" y="-131.5" font-family="JetBrains Mono" font-size="10.00">[0x5f82fe62f270]</text>
 </g>
-<!-- p0x5a7e41352fe0 -->
+<!-- p0x5f82fe62efd0 -->
 <g id="node2" class="node">
-<title>p0x5a7e41352fe0</title>
+<title>p0x5f82fe62efd0</title>
 <path fill="none" stroke="green" d="M12,-0.5C12,-0.5 160,-0.5 160,-0.5 166,-0.5 172,-6.5 172,-12.5 172,-12.5 172,-74.5 172,-74.5 172,-80.5 166,-86.5 160,-86.5 160,-86.5 12,-86.5 12,-86.5 6,-86.5 0,-80.5 0,-74.5 0,-74.5 0,-12.5 0,-12.5 0,-6.5 6,-0.5 12,-0.5"/>
-<text text-anchor="middle" x="86" y="-73" font-family="JetBrains Mono" font-size="10.00">[0x5a7e41352fe0]</text>
+<text text-anchor="middle" x="86" y="-73" font-family="JetBrains Mono" font-size="10.00">[0x5f82fe62efd0]</text>
 <polyline fill="none" stroke="green" points="0,-65 172,-65"/>
 <text text-anchor="middle" x="86" y="-51.5" font-family="JetBrains Mono" font-size="10.00">type = NUMERICAL_NODE [&#45;2]</text>
 <polyline fill="none" stroke="green" points="0,-43.5 172,-43.5"/>
@@ -37,17 +37,17 @@
 <polyline fill="none" stroke="green" points="86,-0.5 86,-22"/>
 <text text-anchor="middle" x="129" y="-8.5" font-family="JetBrains Mono" font-size="10.00">[(nil)]</text>
 </g>
-<!-- p0x5a7e413522b0&#45;&gt;p0x5a7e41352fe0 -->
+<!-- p0x5f82fe62e2b0&#45;&gt;p0x5f82fe62efd0 -->
 <g id="edge1" class="edge">
-<title>p0x5a7e413522b0:l&#45;&gt;p0x5a7e41352fe0</title>
+<title>p0x5f82fe62e2b0:l&#45;&gt;p0x5f82fe62efd0</title>
 <path fill="none" stroke="green" stroke-width="2" stroke-dasharray="5,2" d="M127,-123C127,-123 119.73,-109.09 111.32,-92.98"/>
 <polygon fill="green" stroke="green" stroke-width="2" points="112.67,-92.55 109.58,-89.65 110.19,-93.84 112.67,-92.55"/>
 </g>
-<!-- p0x5a7e41353290 -->
+<!-- p0x5f82fe62f270 -->
 <g id="node3" class="node">
-<title>p0x5a7e41353290</title>
+<title>p0x5f82fe62f270</title>
 <path fill="none" stroke="blue" d="M213,-0.5C213,-0.5 349,-0.5 349,-0.5 355,-0.5 361,-6.5 361,-12.5 361,-12.5 361,-74.5 361,-74.5 361,-80.5 355,-86.5 349,-86.5 349,-86.5 213,-86.5 213,-86.5 207,-86.5 201,-80.5 201,-74.5 201,-74.5 201,-12.5 201,-12.5 201,-6.5 207,-0.5 213,-0.5"/>
-<text text-anchor="middle" x="281" y="-73" font-family="JetBrains Mono" font-size="10.00">[0x5a7e41353290]</text>
+<text text-anchor="middle" x="281" y="-73" font-family="JetBrains Mono" font-size="10.00">[0x5f82fe62f270]</text>
 <polyline fill="none" stroke="blue" points="201,-65 361,-65"/>
 <text text-anchor="middle" x="281" y="-51.5" font-family="JetBrains Mono" font-size="10.00">type = VARIABLE_NODE [0]</text>
 <polyline fill="none" stroke="blue" points="201,-43.5 361,-43.5"/>
@@ -57,9 +57,9 @@
 <polyline fill="none" stroke="blue" points="281,-0.5 281,-22"/>
 <text text-anchor="middle" x="321" y="-8.5" font-family="JetBrains Mono" font-size="10.00">[(nil)]</text>
 </g>
-<!-- p0x5a7e413522b0&#45;&gt;p0x5a7e41353290 -->
+<!-- p0x5f82fe62e2b0&#45;&gt;p0x5f82fe62f270 -->
 <g id="edge2" class="edge">
-<title>p0x5a7e413522b0:r&#45;&gt;p0x5a7e41353290</title>
+<title>p0x5f82fe62e2b0:r&#45;&gt;p0x5f82fe62f270</title>
 <path fill="none" stroke="green" stroke-width="2" stroke-dasharray="5,2" d="M239,-123C239,-123 246.44,-109.09 255.06,-92.98"/>
 <polygon fill="green" stroke="green" stroke-width="2" points="256.2,-93.82 256.85,-89.64 253.73,-92.5 256.2,-93.82"/>
 </g>

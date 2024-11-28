@@ -32,9 +32,9 @@
 }
 
 // FUNCTION PROTOTYPES //
-DiffError diffTreeDump         (binaryTree<DiffNode> *tree);
-DiffError diffTreeNodeDump     (FILE *dumpFile, node<DiffNode> *node);
-DiffError diffTreeNodeDumpLink (FILE *dumpFile, node<DiffNode> *node);
+diffError diffTreeDump         (binaryTree<diffNode> *tree);
+diffError diffTreeNodeDump     (FILE *dumpFile, node<diffNode> *node);
+diffError diffTreeNodeDumpLink (FILE *dumpFile, node<diffNode> *node);
 // FUNCTION PROTOTYPES //
 
 #endif // DIFF_DUMP_H_

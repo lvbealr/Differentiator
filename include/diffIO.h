@@ -6,11 +6,11 @@
 
 // FUNCTION PROTOTYPES //
 template<>
-inline binaryTreeError printNode(node<DiffNode> *currentNode, FILE *stream);
+inline binaryTreeError printNode(node<diffNode> *currentNode, FILE *stream);
 // FUNCTION PROTOTYPES //
 
 template<>
-inline binaryTreeError printNode(node<DiffNode> *currentNode, FILE *stream) {
+inline binaryTreeError printNode(node<diffNode> *currentNode, FILE *stream) {
   customWarning(currentNode != NULL, NODE_NULL_POINTER);
   customWarning(stream      != NULL, BAD_STREAM_POINTER);
 
@@ -23,7 +23,15 @@ inline binaryTreeError printNode(node<DiffNode> *currentNode, FILE *stream) {
 
     case OPERATION_NODE:
       {
-        fprintf(stream, "%s", currentNode->data.nodeValue.op.symbol);
+        #define OPERATOR(NAME, SYMBOL, ...) {           \
+          if (currentNode->data.nodeValue.op == NAME) { \
+            fprintf(stream, "%s", SYMBOL);              \
+          }                                             \
+        }
+
+        #include "diffOperations.def"
+
+        #undef OPERATOR
         break;
       }
 

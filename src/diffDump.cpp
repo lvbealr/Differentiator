@@ -1,7 +1,7 @@
 #include "differentiator.h"
 #include "diffDump.h"
 
-DiffError diffTreeDump(binaryTree<DiffNode> *tree) {
+diffError diffTreeDump(binaryTree<diffNode> *tree) {
   customWarning(tree != NULL, TREE_ERROR);
 
   tree->infoData->dumpFileName = "temp.dot";
@@ -56,7 +56,7 @@ DiffError diffTreeDump(binaryTree<DiffNode> *tree) {
   return NO_DIFF_ERRORS;
 }
 
-DiffError diffTreeNodeDump      (FILE *dumpFile, node<DiffNode> *node) {
+diffError diffTreeNodeDump      (FILE *dumpFile, node<diffNode> *node) {
   customWarning(dumpFile != NULL, DUMP_FILE_ERROR);
   customWarning(node     != NULL, NODE_NULL_PTR);
 
@@ -69,35 +69,21 @@ DiffError diffTreeNodeDump      (FILE *dumpFile, node<DiffNode> *node) {
         break;
       }
 
-    #define NAME_OPERATION(operationType) {                                                                                              \
-      case operationType:                                                                                                                \
-        {                                                                                                                                \
-          fprintf(dumpFile, "p%p [label = \"{ <p> [%p] | <t> type = OPERATION_NODE [%d] | <d> data = [%s] | { <l> [%p] | <r> [%p] }}\"," \
-                            "color = \"purple\"];\n",                                                                                    \
-                            node, node, node->data.type, #operationType, node->left, node->right);                                       \
-          break;                                                                                                                         \
-        }                                                                                                                                \
-      }
-
     case OPERATION_NODE:
       {
-        switch (node->data.nodeValue.op.name) {
-          NAME_OPERATION (ADD);
-          NAME_OPERATION (SUB);
-          NAME_OPERATION (MUL);
-          NAME_OPERATION (DIV);
-          NAME_OPERATION (POW);
-          NAME_OPERATION (SIN);
-          NAME_OPERATION (COS);
-          NAME_OPERATION (EXP);
-          NAME_OPERATION  (LN);
-          NAME_OPERATION(SQRT);
+        #define OPERATOR(NAME, SYMBOL, ...) {                                                                                              \
+          if (node->data.nodeValue.op == NAME) {                                                                                    \
+            fprintf(dumpFile, "p%p [label = \"{ <p> [%p] | <t> type = OPERATION_NODE [%d] | <d> data = [%s] | { <l> [%p] | <r> [%p] }}\"," \
+                              "color = \"purple\"];\n",                                                                                    \
+                              node, node, node->data.type, SYMBOL, node->left, node->right);                                               \
+          }                                                                                                                                \
         }
 
+        #include "diffOperations.def"
+
+        #undef OPERATOR
         break;
       }
-
-    #undef NAME_OPERATION
 
     case VARIABLE_NODE:
       {
@@ -124,7 +110,7 @@ DiffError diffTreeNodeDump      (FILE *dumpFile, node<DiffNode> *node) {
   return NO_DIFF_ERRORS;
 }
 
-DiffError diffTreeNodeDumpLink(FILE *dumpFile, node<DiffNode> *node) {
+diffError diffTreeNodeDumpLink(FILE *dumpFile, node<diffNode> *node) {
   customWarning(dumpFile != NULL, DUMP_FILE_ERROR);
   customWarning(node     != NULL, NODE_NULL_PTR);
 
@@ -141,8 +127,7 @@ DiffError diffTreeNodeDumpLink(FILE *dumpFile, node<DiffNode> *node) {
   return NO_DIFF_ERRORS;
 }
 
-
-DiffError writeHtmlHeader(binaryTree<DiffNode> *tree) {
+diffError writeHtmlHeader(binaryTree<diffNode> *tree) {
   customWarning(tree != NULL, TREE_ERROR);
 
   char *header = (char *)calloc(MAX_HEADER_SIZE, sizeof(char));
