@@ -6,7 +6,7 @@
 
 #include "binaryTree.h"
 
-enum DiffError {
+enum diffError {
   NO_DIFF_ERRORS    =      0,
   DIFF_NULL_PTR     = 1 << 0,
   TREE_ERROR        = 1 << 1,
@@ -18,45 +18,58 @@ enum DiffError {
   BUFFER_ERROR      = 1 << 7
 };
 
-enum NodeType {
+enum nodeType {
   NUMERICAL_NODE = -2,
   OPERATION_NODE = -1,
   VARIABLE_NODE  =  0
 };
 
+#define OPERATOR(NAME, ...) NAME,
 enum Operation {
-  ADD  = 1 << 0,
-  SUB  = 1 << 1,
-  MUL  = 1 << 2,
-  DIV  = 1 << 3,
-  POW  = 1 << 4,
-  SIN  = 1 << 5,
-  COS  = 1 << 6,
-  EXP  = 1 << 7,
-  LN   = 1 << 8,
-  SQRT = 1 << 9
+  #include "diffOperations.def"
+};
+#undef OPERATOR
+
+#define OPERATOR(...) 1 +
+const size_t OPERATIONS_NUMBER =
+                               #include "diffOperations.def"
+                               0;
+#undef OPERATOR
+
+struct operationInfo {
+  Operation   name     =   {};
+  const char *symbol   =   {};
+  size_t      priority =    0;
 };
 
-struct OperationInfo {
-  Operation name     =   {};
-  char     *symbol   =   {};
-  size_t    priority =    0;
-};
-
-union NodeData {
+union nodeData {
   double           value;
   char             varIndex;
-  OperationInfo    op;
+  Operation        op;
 };
 
-struct DiffNode {
-  NodeType  type       = NUMERICAL_NODE;
-  NodeData  nodeValue  = {.value = NAN};
+struct diffNode {
+  nodeType  type       = NUMERICAL_NODE;
+  nodeData  nodeValue  = {.value = NAN};
+};
+
+struct variableTable {
+  char  *variableName  = {};
+  double variableValue = NAN;
 };
 
 struct Differentiator {
-  binaryTree<DiffNode> diffTree    =             {};
-  DiffError            errorStatus = NO_DIFF_ERRORS;
+  binaryTree<diffNode> diffTree    =             {};
+  variableTable       *variables   =             {};
+  diffError            errorStatus = NO_DIFF_ERRORS;
 };
+
+// FUNCTION PROTOTYPES //
+diffError diffInitialize(Differentiator *diff);
+diffError diffDestruct  (Differentiator *diff);
+diffError diffVerify    (Differentiator *diff);
+
+diffError evalTree      (Differentiator *diff, double *treeValue);
+// FUNCTION PROROTYPES //
 
 #endif // DIFFERENTIATOR_H_
