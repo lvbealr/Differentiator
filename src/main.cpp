@@ -12,8 +12,8 @@ int main(int argc, char *argv[]) {
   parseConsole      (argc, argv, &Diff.diffTree);
   binaryTreeSetInfo (&Diff.diffTree);
 
-  Diff.diffTree.root->data.type                      = OPERATION_NODE;;
-  Diff.diffTree.root->data.nodeValue.op              = {.name = ADD, .symbol = (char *)"+", .priority = 2};
+  Diff.diffTree.root->data.type                      = OPERATION_NODE;
+  Diff.diffTree.root->data.nodeValue.op              = ADD;
 
   DIFF_DUMP_(&Diff.diffTree);
 
@@ -29,9 +29,7 @@ int main(int argc, char *argv[]) {
 
   DIFF_SAVE_DUMP_IMAGE(&Diff.diffTree);
 
-  FILE *io = fopen("IO/output.txt", "w");
-
-  callPrintBinaryTree(&Diff.diffTree, INFIX, io);
+  callPrintBinaryTree(&Diff.diffTree, INFIX, stdout);
 
   return 0;
 }
