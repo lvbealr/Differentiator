@@ -1,10 +1,21 @@
 #ifndef DIFF_IO_H_
 #define DIFF_IO_H_
 
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include "binaryTree.h"
 #include "differentiator.h"
+#include "customWarning.h"
+
+const size_t MAX_FILEPATH_SIZE = 100;
+const size_t MAX_BUFFER_SIZE   = 300;
 
 // FUNCTION PROTOTYPES //
+diffError readFromFile(Differentiator *diff);
+
 template<>
 inline binaryTreeError printNode(node<diffNode> *currentNode, FILE *stream);
 // FUNCTION PROTOTYPES //
