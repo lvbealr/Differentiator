@@ -1,6 +1,6 @@
 CXX           = g++
 
-DIFF_SRC      = main.cpp diffDump.cpp diffIO.cpp differentiator.cpp diffOperations.cpp
+DIFF_SRC      = main.cpp diffDump.cpp diffIO.cpp differentiator.cpp diffOperations.cpp lexer.cpp
 
 TARGET        = Differentiator
 
@@ -39,7 +39,7 @@ vpath %.cpp $(SRC_DIR)
 .PHONY: all
 
 all:
-	make akinator
+	make differentiator
 	@printf "\n$(CYAN_TEXT)RUNNING...\n\n$(DEFAULT_TEXT)"
 
 $(TARGET): $(BUILD_DIR) $(OBJECT)
@@ -52,7 +52,7 @@ $(BUILD_DIR):
 $(OBJECT): %.o : %.cpp
 	$(CXX) $(CFLAGS) -c $^ -o $(addprefix $(BUILD_DIR), $@)
 
-akinator: $(addprefix $(SRC_DIR), $(DIFF_SRC))
+differentiator: $(addprefix $(SRC_DIR), $(DIFF_SRC))
 	make -s $(BUILD_DIR)
 	@$(CXX) $(CFLAGS) $^ $(SUBMODULE_SRC) -o $(addprefix $(BUILD_DIR), $(TARGET))
 
