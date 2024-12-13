@@ -11,8 +11,7 @@ diffError diffTreeDump(binaryTree<diffNode> *tree) {
 
   // .DOT HEADER //
   fprintf(dumpFile, "digraph diffTree {\nsplines=polyline;\nrankdir=HR;\nnodesep=0.4;"
-                    "\nnode [shape=record, fontname=\"JetBrains Mono\", fontsize=\"10\", color=\"gray\", style=\"rounded\"];\n"
-                    "edge [style=dashed, color=\"green\", weight=\"10\", penwidth=\"2\", "
+                    "\nedge [style=solid, color=\"gray\", weight=\"6\", penwidth=\"1\", "
                     "arrowsize=\"0.4\"];\n");
   // .DOT HEADER //
 
@@ -63,20 +62,24 @@ diffError diffTreeNodeDump      (FILE *dumpFile, node<diffNode> *node) {
   switch (node->data.type) {
     case NUMERICAL_NODE:
       {
-        fprintf(dumpFile, "p%p [label = \"{ <p> [%p] | <t> type = NUMERICAL_NODE [%d] | <d> data = [%lg] | { <l> [%p] | <r> [%p] }}\","
-                          "color = \"green\"];\n",
-          node, node, node->data.type, node->data.nodeValue.value, node->left, node->right);
+        fprintf(dumpFile, "p%p [shape = \"circle\"; style = \"filled\"; "
+                          "fillcolor = \"lightgreen\"; "
+                          "color = \"green\"; "
+                          "label = \"%lg\"];\n",
+          node, node->data.nodeValue.value);
         break;
       }
 
     case OPERATION_NODE:
       {
-        #define OPERATOR(NAME, SYMBOL, ...) {                                                                                              \
-          if (node->data.nodeValue.op == NAME) {                                                                                    \
-            fprintf(dumpFile, "p%p [label = \"{ <p> [%p] | <t> type = OPERATION_NODE [%d] | <d> data = [%s] | { <l> [%p] | <r> [%p] }}\"," \
-                              "color = \"purple\"];\n",                                                                                    \
-                              node, node, node->data.type, SYMBOL, node->left, node->right);                                               \
-          }                                                                                                                                \
+        #define OPERATOR(NAME, SYMBOL, ...) {                                 \
+          if (node->data.nodeValue.op == NAME) {                              \
+            fprintf(dumpFile, "p%p [shape = \"record\"; style = \"filled\"; " \
+                              "fillcolor = \"lightpink\"; "                   \
+                              "color = \"purple\"; "                          \
+                              "label = \"%s\"];\n",                           \
+                              node, SYMBOL);                                  \
+          }                                                                   \
         }
 
         #include "diffOperations.def"
@@ -87,9 +90,11 @@ diffError diffTreeNodeDump      (FILE *dumpFile, node<diffNode> *node) {
 
     case VARIABLE_NODE:
       {
-        fprintf(dumpFile, "p%p [label = \"{ <p> [%p] | <t> type = VARIABLE_NODE [%d] | <d> data = [%c] | { <l> [%p] | <r> [%p] }}\","
-                          "color = \"blue\"];\n",
-          node, node, node->data.type, node->data.nodeValue.varIndex, node->left, node->right);
+        fprintf(dumpFile, "p%p [shape = \"doublecircle\"; style = \"filled\"; "
+                          "fillcolor = \"lightblue\"; "
+                          "color = \"blue\"; ",
+                          "label = \"%c\"];\n",
+          node, node->data.nodeValue.varIndex);
         break;
       }
 
@@ -115,12 +120,12 @@ diffError diffTreeNodeDumpLink(FILE *dumpFile, node<diffNode> *node) {
   customWarning(node     != NULL, NODE_NULL_PTR);
 
   if (node->left != NULL) {
-    fprintf(dumpFile, "p%p:<l> -> p%p\n", node, node->left);
+    fprintf(dumpFile, "p%p -> p%p\n", node, node->left);
     diffTreeNodeDumpLink(dumpFile, node->left);
   }
 
   if (node->right != NULL) {
-    fprintf(dumpFile, "p%p:<r> -> p%p\n", node, node->right);
+    fprintf(dumpFile, "p%p -> p%p\n", node, node->right);
     diffTreeNodeDumpLink(dumpFile, node->right);
   }
 
