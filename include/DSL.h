@@ -5,36 +5,40 @@
 #include "binaryTree.h"
 
 // FUNCTION PROTOTYPES //
-node<diffNode> *createNode  (node<diffNode>  node);
-node<diffNode> *copySubtree (node<diffNode> *subtreeRoot);
 // FUNCTION PROTOTYPES //
 
-// MACROS //
-#define EVAL_SUBTREE_ (subtree) evalInside    (diff, root->subtree);
+// MACROS //    
+#define EVAL_SUBTREE_(subtree)                         evalInternal(diff, (rootNode)->subtree)
+#define DIFF_(direction)                               NULL // TODO
+#define COPY_(subtreeRoot)                             copySubtree   (subtreeRoot)
+#define CONST_(number)                                 diffNodeCreate(node<diffNode> {.data       = {.type = NUMERICAL_NODE, \
+                                                                                      .nodeValue  = {.value = number}},      \
+                                                                                      .left       = NULL,                    \
+                                                                                      .right      = NULL,                    \
+                                                                                      .parent     = NULL})                   \
 
-#define DIFF_           (subtree) diffInside  (diff);
-#define COPY_           (subtree) copySubtree (root->subtree);
+#define VARIABLE_(index)                               diffNodeCreate(node<diffNode> {.data       = {.type = VARIABLE_NODE,  \
+                                                                                      .nodeValue  = {.varIndex = index}},    \
+                                                                                      .left       = NULL,                    \
+                                                                                      .right      = NULL,                    \
+                                                                                      .parent     = NULL})                   \
 
-#define CONST_          (number)  createNode  (node<diffNode> {.left = NULL, .right = NULL, .parent = NULL,                  \
-                                                  .nodeData = {.type = NUMERICAL_NODE, .nodeValue = {.value = number}}})
+#define OPERATION_NODE_(leftNode, rightNode, operator) diffNodeCreate(node<diffNode> {.data       = {.type = OPERATION_NODE, \
+                                                                                      .nodeValue  = {.op = operator}},       \
+                                                                                      .left       = leftNode,                \
+                                                                                      .right      = rightNode,               \
+                                                                                      .parent     = NULL})                   \
 
-#define VARIABLE_       (number)  createNode  (node<diffNode> {.left = NULL, .right = NULL, .parent = NULL,                  \
-                                                  .nodeData = {.type = VARIABLE_NODE, .nodeValue = {.varIndex = index}}})
-
-#define OPERATION_NODE_ (leftNode, rightNode, operator)                                                                      \
-                                  createNode  (node<diffNode> {.left = NULL, .right = NULL, .parent = NULL,                  \
-                                                  .nodeData = {.type = OPERATION_NODE, .nodeValue = {.operation = operator}}})
-
-#define POW_            (leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, POW );
-#define SIN_            (leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, SIN );
-#define COS_            (leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, COS );
-#define SQRT_           (leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, SQRT);
-#define LN_             (leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, LN  );
-#define EXP_            (leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, EXP );
-#define MUL_            (leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, MUL );
-#define DIV_            (leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, DIV );
-#define ADD_            (leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, ADD );
-#define SUB_            (leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, SUB );
+#define ADD_(leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, ADD )
+#define SUB_(leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, SUB )
+#define MUL_(leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, MUL )
+#define DIV_(leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, DIV )
+#define POW_(leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, POW )
+#define SIN_(leftNode)            OPERATION_NODE_(leftNode, NULL,      SIN )
+#define COS_(leftNode)            OPERATION_NODE_(leftNode, NULL,      COS )
+#define SQRT_(leftNode)           OPERATION_NODE_(leftNode, NULL,      SQRT)
+#define LN_(leftNode)             OPERATION_NODE_(leftNode, NULL,      LN  )
+#define EXP_(leftNode)            OPERATION_NODE_(leftNode, NULL,      EXP )
 // MACROS //
 
 #endif // DSL_H_
