@@ -17,17 +17,17 @@ diffError diffInitialize(Differentiator *diff, int argc, char *argv[], const cha
     parseConsole        (argc, argv, &diff->diffTree);
     binaryTreeSetInfo   (&diff->diffTree);
     
-    diff->buffer->filePath = (char *)"IO/input.txt";
+    diff->buffer->filePath = (char *)"IO/input.txt"; // TODO
     readFromFile(diff);
 
     diff->tokens = (tokensData *)calloc(1, sizeof(tokensData));
     customWarning(diff->tokens != NULL, BAD_ALLOCATION);
-    diff->tokens->tokenArray = (Token *)calloc(diff->buffer->textSize, sizeof(Token)); // TODO
+    diff->tokens->tokenArray = (Token *)calloc(diff->buffer->textSize, sizeof(Token)); 
     customWarning(diff->tokens->tokenArray != NULL, BAD_ALLOCATION);
 
     diff->variables = (variableTable *)calloc(1, sizeof(variableTable));
     customWarning(diff->variables != NULL, BAD_ALLOCATION);
-    diff->variables->variableArray = (Variable *)calloc(MAX_VARIABLE_COUNT, sizeof(Variable)); // TODO
+    diff->variables->variableArray = (Variable *)calloc(MAX_VARIABLE_COUNT, sizeof(Variable)); 
     customWarning(diff->variables->variableArray != NULL, BAD_ALLOCATION);
 
     return NO_DIFF_ERRORS;

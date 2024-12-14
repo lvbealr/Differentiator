@@ -13,7 +13,7 @@ parseError expressionLexer(Differentiator *diff) {
     
     char *symbol = diff->buffer->text;
     char *word   = (char *)calloc(MAX_WORD_LENGTH + 1, sizeof(char));
-    customWarning(word != NULL, (parseError) BAD_ALLOCATION); // TODO it works?
+    customWarning(word != NULL, (parseError) BAD_ALLOCATION);
     
     while (symbol < diff->buffer->text + diff->buffer->textSize) {
     
@@ -27,19 +27,18 @@ parseError expressionLexer(Differentiator *diff) {
             size_t numberLength = 0;
 
             if (sscanf(symbol, "%lg%n", &number, &numberLength) != 0) {
-                // fprintf(stderr, "[%lg]\n", number); // TODO
                 node<diffNode> *nodePointer = CONST_(number);
                 
                 if (diff->tokens) {
                     diff->tokens->tokenArray[diff->tokens->count++] = {.tokenPointer = symbol,
                                                                        .type         = NUMERICAL_NODE,
                                                                        .nextToken    = NULL};
-                    // fprintf(stderr, "tokenArray[%lu] = %s\n", diff->tokens->count - 1, diff->tokens->tokenArray[diff->tokens->count - 1].tokenPointer); // TODO
+
                     if (diff->tokens->count - 1 > 0) {
                         diff->tokens->tokenArray[diff->tokens->count - 1].nextToken = 
                        &diff->tokens->tokenArray[diff->tokens->count];
                     }
-                } // TODO FUNCTION CREATE TOKEN?
+                }
                 
                 symbol += numberLength;
                 continue;
@@ -58,7 +57,6 @@ parseError expressionLexer(Differentiator *diff) {
             const operationInfo *operation = findOperationBySymbol(word);
             
             if (operation) {
-                // fprintf(stderr, "[%s]\n", operation->symbol); // TODO
                 node<diffNode> *nodePointer = OPERATION_NODE_(NULL, NULL, operation->name);
                 isOperation                 = true;
 
@@ -66,12 +64,11 @@ parseError expressionLexer(Differentiator *diff) {
                     diff->tokens->tokenArray[diff->tokens->count++] = {.tokenPointer = symbol - letterNumber - 1,
                                                                        .type         = OPERATION_NODE,
                                                                        .nextToken    = NULL};
-                    // fprintf(stderr, "tokenArray[%lu] = %s\n", diff->tokens->count - 1, diff->tokens->tokenArray[diff->tokens->count - 1].tokenPointer); // TODO
                     if (diff->tokens->count - 1 > 0) {
                         diff->tokens->tokenArray[diff->tokens->count - 1].nextToken = 
                        &diff->tokens->tokenArray[diff->tokens->count];
                     }
-                } // TODO FUNCTION CREATE TOKEN?
+                }
 
                 break;
             }
@@ -117,15 +114,13 @@ parseError expressionLexer(Differentiator *diff) {
             diff->tokens->tokenArray[diff->tokens->count++] = {.tokenPointer = symbol - 1,
                                                                .type         = VARIABLE_NODE,
                                                                .nextToken    = NULL};
-            // fprintf(stderr, "tokenArray[%lu] = %s\n", diff->tokens->count - 1, diff->tokens->tokenArray[diff->tokens->count - 1].tokenPointer); // TODO
             if (diff->tokens->count - 1 > 0) {
                 diff->tokens->tokenArray[diff->tokens->count - 1].nextToken = 
                &diff->tokens->tokenArray[diff->tokens->count];
             }
-        } // TODO FUNCTION CREATE TOKEN?
+        }
 
         node<diffNode> *nodePointer = VARIABLE_(*findWord->variableName);
-        // fprintf(stderr, "[%c]\n", nodePointer->data.nodeValue.varIndex); // TODO
     }
 
     free(word);

@@ -7,23 +7,50 @@
 #include "lexer.h"
 #include "diffDump.h"
 
-// #define CHECK_POINTER() {fprintf(stderr, "CHECKER: %s, [%s], %p, %lu\n", __PRETTY_FUNCTION__, diff->tokens->tokenArray[diff->tokens->current].tokenPointer, diff->tokens->tokenArray[diff->tokens->current].tokenPointer, diff->tokens->current);}
-// #define PRINT_FUNC()    {fprintf(stderr, "=============================================\n"); fprintf(stderr, "-> %s\n", __PRETTY_FUNCTION__); fprintf(stderr, "=============================================\n\n");}
+#define _NDEBUG
+
+#ifndef _NDEBUG
+    #define $CHECK_POINTER()  {customPrint(yellow,    bold, bgDefault, "[CHECKER]: ");                                                \
+                               customPrint(lightblue, bold, bgDefault, "(%s), (%p), (%lu), \"%s\"\n",                                 \
+                                                                        __PRETTY_FUNCTION__,                                          \
+                                                                        diff->tokens->tokenArray[diff->tokens->current].tokenPointer, \
+                                                                        diff->tokens->current,                                        \
+                                                                        diff->tokens->tokenArray[diff->tokens->current].tokenPointer);}
+
+    #define $PRINT_FUNC()     {customPrint(lightblue, bold, bgDefault, "==========================================\n");               \
+                               customPrint(purple,    bold, bgDefault, "->> %s\n", __PRETTY_FUNCTION__);                              \
+                               customPrint(lightblue, bold, bgDefault, "==========================================\n");}    
+
+    #define $CHECK_COUNTERS() {customPrint(red, bold, bgDefault, "[COUNTERS]: ");                                                     \
+                               customPrint(blue, bold, bgDefault, "%lu ", diff->tokens->current);                                     \
+                               customPrint(green, bold, bgDefault, "%lu\n", diff->tokens->count);}
+
+    #define $ALL_CHECK() {$CHECK_POINTER(); \
+                          $PRINT_FUNC();    \
+                          $CHECK_COUNTERS();}
+
+#else 
+    #define $CHECK_POINTER() ;
+    #define $PRINT_FUNC()    ;
+    #define $CHECK_COUNTER() ;
+    #define $ALL_CHECK()     ;
+
+#endif
 
 node<diffNode> *getG(Differentiator *diff) {
     customWarning(diff != NULL, NULL);
 
-    // PRINT_FUNC();
+    $ALL_CHECK();
 
     node<diffNode> *node_ = getE(diff);
-
-    // CHECK_POINTER();
-
-    if (*(diff->tokens->tokenArray[diff->tokens->current].tokenPointer) == '\0') {
-        SYNTAX_ERROR(__PRETTY_FUNCTION__, __LINE__);
-    }
     
-    // fprintf(stderr, "[xxx] %s [%c]\n\n", __PRETTY_FUNCTION__, *(diff->tokens->tokenArray[diff->tokens->current].tokenPointer));
+    $ALL_CHECK();
+
+    if (diff->tokens->tokenArray[diff->tokens->current].tokenPointer != NULL) {
+        if (*(diff->tokens->tokenArray[diff->tokens->current].tokenPointer) == '\0') {
+            SYNTAX_ERROR(__PRETTY_FUNCTION__, __LINE__);
+        }
+    }
 
     return node_;
 }
@@ -31,54 +58,49 @@ node<diffNode> *getG(Differentiator *diff) {
 node<diffNode> *getE(Differentiator *diff) {
     customWarning(diff != NULL, NULL);
 
-    // PRINT_FUNC();
+    $ALL_CHECK();
 
     node<diffNode> *node_       = getT(diff);
     node<diffNode> *resultNode_ = node_;
     node<diffNode> *node__      = NULL;
 
-    // CHECK_POINTER();
+    $ALL_CHECK();
 
-    while ((*(diff->tokens->tokenArray[diff->tokens->current].tokenPointer) == '+') ||
-        (*(diff->tokens->tokenArray[diff->tokens->current].tokenPointer) == '-')) {
+    if (diff->tokens->tokenArray[diff->tokens->current].tokenPointer != NULL) {
+        while ((diff->tokens->tokenArray[diff->tokens->current].tokenPointer != NULL) && ((*(diff->tokens->tokenArray[diff->tokens->current].tokenPointer) == '+') ||
+            (*(diff->tokens->tokenArray[diff->tokens->current].tokenPointer) == '-'))) {
 
-        // CHECK_POINTER();
+            char operation = *(diff->tokens->tokenArray[diff->tokens->current].tokenPointer);
 
-        char operation = *(diff->tokens->tokenArray[diff->tokens->current].tokenPointer);
-        // fprintf(stderr, "[xxx] %s [%c]\n", __PRETTY_FUNCTION__, operation);
+            diff->tokens->current++;
 
-        diff->tokens->current++;
+            $ALL_CHECK();
 
-        node__ = getE(diff);
+            node__ = getE(diff);
 
-        // fprintf(stderr, "[xxx] %s OPERATION: %d\n", __PRETTY_FUNCTION__, operation);
+            $ALL_CHECK();
 
-        switch (operation) {
+            switch (operation) {
 
-            case '+':
-                {
-                    // fprintf(stderr, "ADD\n");
-                    // fprintf(stderr, "[xxx] %s LEFT: [%p %lg], RIGHT: [%p %lg]\n", __PRETTY_FUNCTION__, node_, node_->data.nodeValue.value, node__, node__->data.nodeValue.value);
-                    resultNode_ = ADD_(node_, node__);
-                    break;
-                }
-                
-            case '-':
-                {   
-                    // fprintf(stderr, "SUB\n");
-                    // fprintf(stderr, "[xxx] %s LEFT: [%p %lu], RIGHT: [%p %lu]\n", __PRETTY_FUNCTION__, node_, node_->data.nodeValue.value, node__, node__->data.nodeValue.value);
-                    resultNode_ = SUB_(node_, node__);
-                    break;
-                }
-                
-            default:
-                {
-                    break;
+                case '+':
+                    {
+                        resultNode_ = ADD_(node_, node__);
+                        break;
+                    }
+                    
+                case '-':
+                    {   
+                        resultNode_ = SUB_(node_, node__);
+                        break;
+                    }
+                    
+                default:
+                    {
+                        break;
+                    }
                 }
             }
-        }
-
-    // fprintf(stderr, "[xxx] %s RESULT: [%p %d], CURRENT: [%lu]\n", __PRETTY_FUNCTION__, resultNode_, resultNode_->data.nodeValue.op, diff->tokens->current);
+    }
 
     return resultNode_;
 }
@@ -86,78 +108,82 @@ node<diffNode> *getE(Differentiator *diff) {
 node<diffNode> *getT(Differentiator *diff) {
     customWarning(diff != NULL, NULL);
 
-    // PRINT_FUNC();
+    $ALL_CHECK();
 
     node<diffNode> *node_       = getD(diff);
     node<diffNode> *resultNode_ = node_;
     node<diffNode> *node__      = NULL;
 
-    // CHECK_POINTER();
+    $ALL_CHECK();
 
-    while ((*(diff->tokens->tokenArray[diff->tokens->current].tokenPointer) == '*') ||
-        (*(diff->tokens->tokenArray[diff->tokens->current].tokenPointer) == '/')) {
+    if (diff->tokens->count != diff->tokens->current) {
+        while ((diff->tokens->tokenArray[diff->tokens->current].tokenPointer != NULL) &&
+              ((*(diff->tokens->tokenArray[diff->tokens->current].tokenPointer) == '*') ||
+               (*(diff->tokens->tokenArray[diff->tokens->current].tokenPointer) == '/'))) {
 
-        // CHECK_POINTER();
-        char operation = *(diff->tokens->tokenArray[diff->tokens->current].tokenPointer);
+            char operation = *(diff->tokens->tokenArray[diff->tokens->current].tokenPointer);
 
-        // fprintf(stderr, "[xxx] %s [%c]\n\n", __PRETTY_FUNCTION__, operation);
+            diff->tokens->current++;
 
-        diff->tokens->current++;
+            $ALL_CHECK();
 
-        node__ = getT(diff);
+            node__ = getT(diff);
 
-        switch (operation) {
-            case '*':
-                {
-                    resultNode_ = MUL_(node_, node__);
-                    break;
-                }
-            
-            case '/':
-                {
-                    resultNode_ = DIV_(node_, node__);
-                    break;
-                }
-            
-            default: 
-                {
-                    break;
-                }
+            $ALL_CHECK();
+
+            switch (operation) {
+                case '*':
+                    {
+                        resultNode_ = MUL_(node_, node__);
+                        break;
+                    }
+                
+                case '/':
+                    {
+                        resultNode_ = DIV_(node_, node__);
+                        break;
+                    }
+                
+                default: 
+                    {
+                        break;
+                    }
+            }
         }
     }
     
-    // fprintf(stderr, "[xxx] %s RESULT: [%p %d]\n", __PRETTY_FUNCTION__, resultNode_, resultNode_->data.nodeValue.op);
-
     return resultNode_;
 }
 
 node<diffNode> *getD(Differentiator *diff) {
     customWarning(diff != NULL, NULL);
 
-    // PRINT_FUNC();
-
-    node<diffNode> *node_       = getP(diff);
+    $ALL_CHECK();
     
+    node<diffNode> *node_       = getP(diff);
     node<diffNode> *resultNode_ = node_;
     node<diffNode> *node__      = NULL;
 
-    // CHECK_POINTER();
+    $ALL_CHECK();
 
-    while (*(diff->tokens->tokenArray[diff->tokens->current].tokenPointer) == '^') {
-        diff->tokens->current++;
+    if (diff->tokens->tokenArray[diff->tokens->current].tokenPointer != NULL) {
+        
+        $ALL_CHECK();
 
-        // CHECK_POINTER();
+        while ((diff->tokens->tokenArray[diff->tokens->current].tokenPointer != NULL) &&
+               (*(diff->tokens->tokenArray[diff->tokens->current].tokenPointer) == '^')) {
+            
+            diff->tokens->current++;
 
-        // fprintf(stderr, "[xxx] %s [%c]\n\n", __PRETTY_FUNCTION__, *diff->tokens->tokenArray[diff->tokens->current - 1].tokenPointer);
+            $ALL_CHECK();
 
-        node__ = getD(diff);
-        resultNode_ = POW_(node_, node__);
-        // fprintf(stderr, "[xxx] %s LEFT NODE: %p RIGHT NODE: %p\n", __PRETTY_FUNCTION__, node_, node__);
+            node__ = getD(diff);
 
-        // fprintf(stderr, "[xxx] %s VALUES: %lg %lg\n", __PRETTY_FUNCTION__, node_->data.nodeValue.value, node__->data.nodeValue.value);
-    }    
+            $ALL_CHECK();
 
-    // fprintf(stderr, "[xxx] %s RESULT_NODE: %p [%lg]\n", __PRETTY_FUNCTION__, resultNode_, resultNode_->data.nodeValue.value);
+            resultNode_ = POW_(node_, node__);
+        }    
+    }
 
     return resultNode_;
 }
@@ -165,25 +191,32 @@ node<diffNode> *getD(Differentiator *diff) {
 node<diffNode> *getP(Differentiator *diff) {
     customWarning(diff != NULL, NULL);
 
-    // PRINT_FUNC();
-    // CHECK_POINTER();
+    $ALL_CHECK();
 
-    if (*(diff->tokens->tokenArray[diff->tokens->current].tokenPointer) == '(') {
+    if ((diff->tokens->tokenArray[diff->tokens->current].tokenPointer) &&
+        (*(diff->tokens->tokenArray[diff->tokens->current].tokenPointer) == '(')) {
 
         diff->tokens->current++;
 
         node<diffNode> *node_ = getE(diff);
 
-        // fprintf(stderr, "%s CURRENT: [%lu]\n", __PRETTY_FUNCTION__, diff->tokens->current);
+        $ALL_CHECK();
+        $ALL_CHECK();
 
-        // CHECK_POINTER();
-
-        if (*(diff->tokens->tokenArray[diff->tokens->current].tokenPointer) != ')') {
+        if ((diff->tokens->tokenArray[diff->tokens->current].tokenPointer) &&
+            (*(diff->tokens->tokenArray[diff->tokens->current].tokenPointer) != ')')) {
             SYNTAX_ERROR(__PRETTY_FUNCTION__, __LINE__);
         }
 
-        // diff->tokens->current++;
+        if (!diff->tokens->tokenArray[diff->tokens->current].tokenPointer) {
+            SYNTAX_ERROR(__PRETTY_FUNCTION__, __LINE__);
 
+        }
+
+        $ALL_CHECK();
+
+        diff->tokens->current++;
+        
         return node_;
     }
 
@@ -195,16 +228,14 @@ node<diffNode> *getP(Differentiator *diff) {
 node<diffNode> *getF(Differentiator *diff) {
     customWarning(diff != NULL, NULL);
     
-    // PRINT_FUNC();
-
     char *funcPattern = (char *)calloc(MAX_WORD_LENGTH, sizeof(char));
 
-    // CHECK_POINTER();
+    $ALL_CHECK();
 
-    if (sscanf(diff->tokens->tokenArray[diff->tokens->current].tokenPointer, "%[^(]", funcPattern) != 0) {
-        // fprintf(stderr, "[xxx] %s funcPattern: [%s]\n", __PRETTY_FUNCTION__, funcPattern);
+    if (sscanf(diff->tokens->tokenArray[diff->tokens->current].tokenPointer, "%[^(]", funcPattern) == 0) {
+        SYNTAX_ERROR(__PRETTY_FUNCTION__, __LINE__);
     }
-
+    
     const operationInfo *operation = findOperationBySymbol(funcPattern);
     
     node<diffNode> *node_ = NULL;
@@ -219,12 +250,15 @@ node<diffNode> *getF(Differentiator *diff) {
                 {                                                                                    \
                     diff->tokens->current++;                                                         \
                     node_ = getE(diff);                                                              \
+                    $ALL_CHECK();                                                                    \
                                                                                                      \
-                    if (*(diff->tokens->tokenArray[diff->tokens->current].tokenPointer) != ')') {    \
+                                                                                                     \
+                    if ((diff->tokens->tokenArray[diff->tokens->current].tokenPointer) &&            \
+                      (*(diff->tokens->tokenArray[diff->tokens->current].tokenPointer) != ')')) {    \
                         SYNTAX_ERROR(__PRETTY_FUNCTION__, __LINE__);                                 \
                     }                                                                                \
                                                                                                      \
-                    diff->tokens->current++;                                                         \
+                    $ALL_CHECK();                                                                    \
                                                                                                      \
                     return name##_(node_, NULL);                                                     \
                                                                                                      \
@@ -250,15 +284,11 @@ node<diffNode> *getF(Differentiator *diff) {
 node<diffNode> *getV(Differentiator *diff) {
     customWarning(diff != NULL, NULL);
     
-    // PRINT_FUNC();
-
     char *varName = (char *)calloc(1, sizeof(char));
 
-    // CHECK_POINTER();
-
+    $ALL_CHECK();
+    
     strncpy(varName, diff->tokens->tokenArray[diff->tokens->current].tokenPointer, 1);
-
-    // fprintf(stderr, "[xxx] %s [%s]\n\n", __PRETTY_FUNCTION__, varName);
 
     const Variable patternWord = {.variableName  = varName,
                                   .variableValue = NAN,
@@ -279,25 +309,22 @@ node<diffNode> *getV(Differentiator *diff) {
 node<diffNode> *getN(Differentiator *diff) {
     customWarning(diff != NULL, NULL);
 
-    // PRINT_FUNC();
-
     double value = {};
 
-    // CHECK_POINTER();
+    $ALL_CHECK();
 
     if (sscanf(diff->tokens->tokenArray[diff->tokens->current].tokenPointer, "%lg", &value) == 0) {
         SYNTAX_ERROR(__PRETTY_FUNCTION__, __LINE__);
     }
 
     else {
-        // fprintf(stderr, "[xxx] %s [%lg]\n\n", __PRETTY_FUNCTION__, value);
-        
-        // CHECK_POINTER();
+
+        $ALL_CHECK();
 
         if (isdigit(*(diff->tokens->tokenArray[diff->tokens->current].tokenPointer))) {
             diff->tokens->current++;
 
-            // CHECK_POINTER();
+            $ALL_CHECK();
         }
 
         else {

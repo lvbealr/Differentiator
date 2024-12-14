@@ -1,1 +1,1 @@
-(4*sqrt(x)*ln(x)^5*4 - 5*x*cos(sin(x)) + 5*x/4/sin(x)^exp(3))
+(3^(5/4) + 5*x - 4^cos(x^(x/-3)) + x^exp(x))

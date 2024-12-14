@@ -31,13 +31,11 @@ diffError readFromFile(Differentiator *diff) {
     diff->buffer->textSize = (size_t)fileData.st_size;
     diff->buffer->text = (char *)calloc(diff->buffer->textSize, sizeof(char));
     int openFile = open(diff->buffer->filePath, O_RDONLY);
-    customWarning(openFile != -1, (diffError) NO_SUCH_FILE); // TODO
+    customWarning(openFile != -1, (diffError) NO_SUCH_FILE);
 
     ssize_t sizeRead = read(openFile, diff->buffer->text, (size_t)diff->buffer->textSize);
     customWarning(sizeRead == diff->buffer->textSize, FILE_ERROR);
 
-    fprintf(stderr, "%s\n", diff->buffer->text);
-    
     close(openFile);
 
     return NO_DIFF_ERRORS;
