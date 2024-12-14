@@ -92,7 +92,7 @@ diffError diffTreeNodeDump      (FILE *dumpFile, node<diffNode> *node) {
       {
         fprintf(dumpFile, "p%p [shape = \"doublecircle\"; style = \"filled\"; "
                           "fillcolor = \"lightblue\"; "
-                          "color = \"blue\"; ",
+                          "color = \"blue\"; "
                           "label = \"%c\"];\n",
           node, node->data.nodeValue.varIndex);
         break;

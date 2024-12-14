@@ -27,14 +27,14 @@ parseError expressionLexer(Differentiator *diff) {
             size_t numberLength = 0;
 
             if (sscanf(symbol, "%lg%n", &number, &numberLength) != 0) {
-                printf("[%lg] ", number);
+                // fprintf(stderr, "[%lg]\n", number); // TODO
                 node<diffNode> *nodePointer = CONST_(number);
                 
                 if (diff->tokens) {
                     diff->tokens->tokenArray[diff->tokens->count++] = {.tokenPointer = symbol,
                                                                        .type         = NUMERICAL_NODE,
                                                                        .nextToken    = NULL};
-
+                    // fprintf(stderr, "tokenArray[%lu] = %s\n", diff->tokens->count - 1, diff->tokens->tokenArray[diff->tokens->count - 1].tokenPointer); // TODO
                     if (diff->tokens->count - 1 > 0) {
                         diff->tokens->tokenArray[diff->tokens->count - 1].nextToken = 
                        &diff->tokens->tokenArray[diff->tokens->count];
@@ -58,9 +58,21 @@ parseError expressionLexer(Differentiator *diff) {
             const operationInfo *operation = findOperationBySymbol(word);
             
             if (operation) {
-                printf("[%s] ", operation->symbol);
+                // fprintf(stderr, "[%s]\n", operation->symbol); // TODO
                 node<diffNode> *nodePointer = OPERATION_NODE_(NULL, NULL, operation->name);
                 isOperation                 = true;
+
+                if (diff->tokens) {
+                    diff->tokens->tokenArray[diff->tokens->count++] = {.tokenPointer = symbol - letterNumber - 1,
+                                                                       .type         = OPERATION_NODE,
+                                                                       .nextToken    = NULL};
+                    // fprintf(stderr, "tokenArray[%lu] = %s\n", diff->tokens->count - 1, diff->tokens->tokenArray[diff->tokens->count - 1].tokenPointer); // TODO
+                    if (diff->tokens->count - 1 > 0) {
+                        diff->tokens->tokenArray[diff->tokens->count - 1].nextToken = 
+                       &diff->tokens->tokenArray[diff->tokens->count];
+                    }
+                } // TODO FUNCTION CREATE TOKEN?
+
                 break;
             }
             
@@ -81,6 +93,7 @@ parseError expressionLexer(Differentiator *diff) {
         if (!findWord) {
             Variable newVariable = {.variableName = (char *)calloc(MAX_WORD_LENGTH + 1, sizeof(char)), .variableValue = NAN, .nextVariable = NULL};
             
+            
             if (!newVariable.variableName) {
                 return VARIABLE_TABLE_ERROR;
             }
@@ -97,10 +110,22 @@ parseError expressionLexer(Differentiator *diff) {
             }
 
             findWord = &diff->variables->variableArray[diff->variables->variableCount - 1];
+
         }
 
+        if (diff->tokens) {
+            diff->tokens->tokenArray[diff->tokens->count++] = {.tokenPointer = symbol - 1,
+                                                               .type         = VARIABLE_NODE,
+                                                               .nextToken    = NULL};
+            // fprintf(stderr, "tokenArray[%lu] = %s\n", diff->tokens->count - 1, diff->tokens->tokenArray[diff->tokens->count - 1].tokenPointer); // TODO
+            if (diff->tokens->count - 1 > 0) {
+                diff->tokens->tokenArray[diff->tokens->count - 1].nextToken = 
+               &diff->tokens->tokenArray[diff->tokens->count];
+            }
+        } // TODO FUNCTION CREATE TOKEN?
+
         node<diffNode> *nodePointer = VARIABLE_(*findWord->variableName);
-        printf("[%c] ", nodePointer->data.nodeValue.varIndex);
+        // fprintf(stderr, "[%c]\n", nodePointer->data.nodeValue.varIndex); // TODO
     }
 
     free(word);

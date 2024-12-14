@@ -6,24 +6,12 @@ const operationInfo operations[] = {
 };
 #undef OPERATOR
 
-#define FIND_OPERATION_(...) do {                                      \
-    for (size_t opIndex = 0; opIndex < OPERATIONS_NUMBER; opIndex++) { \
-        if (__VA_ARGS__) {                                             \
-            return operations + opIndex;                               \
-        }                                                              \
-    }                                                                  \
-                                                                       \
-    return NULL;                                                       \
-} while (0)
-
 const operationInfo *findOperationBySymbol (const char *symbol) {
     FIND_OPERATION_(!strcmp(operations[opIndex].symbol, symbol));
 }
 
 const Variable *findWordInTable(Differentiator *diff, const Variable *word) {
-    if (diff == NULL) {
-        return NULL;
-    }
+    customWarning(diff != NULL, NULL);
     
     for (size_t index = 0; index < diff->variables->variableCount; index++) {
         if (!strcmp(word->variableName, diff->variables->variableArray[index].variableName)) {
@@ -43,9 +31,7 @@ node<diffNode> *diffNodeCreate(node<diffNode> nodeData) {
     node<diffNode> *newNode = NULL;
     nodeInitialize(&newNode);
 
-    if (!newNode) {
-        return NULL;
-    }
+    customWarning(newNode != NULL, NULL);
 
     newNode->data       = nodeData.data;
     newNode->right      = nodeData.right;
@@ -67,16 +53,12 @@ node<diffNode> *diffNodeCreate(node<diffNode> nodeData) {
 }
 
 node<diffNode> *copySubtree   (node<diffNode> *subtreeRoot) {
-    if (subtreeRoot == NULL) {
-        return NULL;
-    }
+    customWarning(subtreeRoot != NULL, NULL);
 
     node<diffNode> *newSubtreeRoot = NULL;
     nodeInitialize(&newSubtreeRoot);
 
-    if (!newSubtreeRoot) {
-        return NULL;
-    }
+    customWarning(newSubtreeRoot != NULL, NULL);
 
     newSubtreeRoot->data       = subtreeRoot->data;
     newSubtreeRoot->data.depth = subtreeRoot->data.depth;

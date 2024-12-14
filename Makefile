@@ -1,6 +1,6 @@
 CXX           = g++
 
-DIFF_SRC      = main.cpp diffDump.cpp diffIO.cpp differentiator.cpp diffOperations.cpp lexer.cpp
+DIFF_SRC      = main.cpp diffDump.cpp diffIO.cpp differentiator.cpp diffOperations.cpp lexer.cpp recursiveDescentParser.cpp
 
 TARGET        = Differentiator
 

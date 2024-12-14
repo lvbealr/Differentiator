@@ -29,16 +29,19 @@
                                                                                       .right      = rightNode,               \
                                                                                       .parent     = NULL})                   \
 
-#define ADD_(leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, ADD )
-#define SUB_(leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, SUB )
-#define MUL_(leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, MUL )
-#define DIV_(leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, DIV )
-#define POW_(leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, POW )
-#define SIN_(leftNode)            OPERATION_NODE_(leftNode, NULL,      SIN )
-#define COS_(leftNode)            OPERATION_NODE_(leftNode, NULL,      COS )
-#define SQRT_(leftNode)           OPERATION_NODE_(leftNode, NULL,      SQRT)
-#define LN_(leftNode)             OPERATION_NODE_(leftNode, NULL,      LN  )
-#define EXP_(leftNode)            OPERATION_NODE_(leftNode, NULL,      EXP )
+#define ADD_(leftNode,  rightNode) OPERATION_NODE_(leftNode, rightNode, ADD )
+#define SUB_(leftNode,  rightNode) OPERATION_NODE_(leftNode, rightNode, SUB )
+#define MUL_(leftNode,  rightNode) OPERATION_NODE_(leftNode, rightNode, MUL )
+#define DIV_(leftNode,  rightNode) OPERATION_NODE_(leftNode, rightNode, DIV )
+#define POW_(leftNode,  rightNode) OPERATION_NODE_(leftNode, rightNode, POW )
+#define SIN_(leftNode,  rightNode) OPERATION_NODE_(leftNode, rightNode, SIN )
+#define COS_(leftNode,  rightNode) OPERATION_NODE_(leftNode, rightNode, COS )
+#define SQRT_(leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, SQRT)
+#define LN_(leftNode,   rightNode) OPERATION_NODE_(leftNode, rightNode, LN  )
+#define EXP_(leftNode,  rightNode) OPERATION_NODE_(leftNode, rightNode, EXP )
+#define OPEN_BRACKET_(...)  NULL
+#define CLOSE_BRACKET_(...) NULL
+#define EQUALS_(...)        NULL
 // MACROS //
 
 #endif // DSL_H_

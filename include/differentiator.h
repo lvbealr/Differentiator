@@ -6,6 +6,8 @@
 
 #include "binaryTree.h"
 
+const size_t MAX_PRIORITY = 4;
+
 enum diffError {
   NO_DIFF_ERRORS    =      0,
   DIFF_NULL_PTR     = 1 << 0,
@@ -83,6 +85,7 @@ struct Token {
 };
 
 struct tokensData {
+  size_t current    = 0;
   size_t count      = 0;
   Token *tokenArray = NULL; // TODO
 };
@@ -103,6 +106,16 @@ diffError diffDestruct    (Differentiator *diff);
 diffError bufferInitialize(Differentiator *diff);
 
 diffError evalTree        (Differentiator *diff, double *value);
+
+#define FIND_OPERATION_(...) do {                                      \
+    for (size_t opIndex = 0; opIndex < OPERATIONS_NUMBER; opIndex++) { \
+        if (__VA_ARGS__) {                                             \
+            return operations + opIndex;                               \
+        }                                                              \
+    }                                                                  \
+                                                                       \
+    return NULL;                                                       \
+} while (0)
 
 const operationInfo *findOperationBySymbol(const char *symbol);
 const Variable      *findWordInTable      (Differentiator *diff, const Variable *word);

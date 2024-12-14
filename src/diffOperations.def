@@ -1,0 +1,83 @@
+OPERATOR(OPEN_BRACKET, "(", 0,
+        {},
+        {}
+        )
+
+OPERATOR(CLOSE_BRACKET, ")", 0,
+        {},
+        {}
+        )
+
+OPERATOR(POW, "^", 1,
+        {evalValue   = pow(EVAL_SUBTREE_(left), EVAL_SUBTREE_(right));},
+        {currentNode = MUL_(
+                            POW_(COPY_(left), COPY_(right)),
+                            ADD_(
+                                MUL_(DIFF_(right), LN_(COPY_(left))),
+                            DIV_(
+                                COPY_(right), COPY_(left))));}
+        )
+
+OPERATOR(SIN, "sin", 2,
+        {evalValue   = sin(EVAL_SUBTREE_(left));},
+        {currentNode = MUL_(
+                            DIFF_(left),
+                            COS_(COPY_(left)));}
+        )
+
+OPERATOR(COS, "cos", 2,
+        {evalValue   = cos(EVAL_SUBTREE_(left));},
+        {currentNode = MUL_(
+                            DIFF_(left),
+                            MUL_(const(-1), SIN_(COPY_(left))));}
+        )
+
+OPERATOR(SQRT, "sqrt", 2,
+        {evalValue   = sqrt(EVAL_SUBTREE_(left));},
+        {currentNode = DIV_(
+                            DIFF_(left),
+                            MUL_(const(2), SQRT_(COPY_(left))));}
+        )
+
+OPERATOR(LN, "ln", 2,
+        {evalValue   = log(EVAL_SUBTREE_(left));},
+        {currentNode = DIV_(DIFF_(left), COPY_(left));}
+        )
+
+OPERATOR(EXP, "exp", 2,
+        {evalValue   = exp(EVAL_SUBTREE_(left));},
+        {currentNode = MUL_(DIFF_(left), EXP_(COPY_(left)));}
+        )
+
+OPERATOR(MUL, "*", 3,
+        {evalValue   = EVAL_SUBTREE_(left) * EVAL_SUBTREE_(right);},
+        {currentNode = ADD_(
+                            MUL_(DIFF_(left), COPY_(right)),
+                            MUL_(COPY_(left), DIFF_(right)));}
+        )
+
+OPERATOR(DIV, "/", 3,
+        {evalValue   = EVAL_SUBTREE_(left) / EVAL_SUBTREE_(right);},
+        {currentNode = DIV_(
+                            SUB_(
+                                MUL_(DIFF_(left), COPY_(right)),
+                                MUL_(COPY_(left), DIFF_(right))),
+                                POW_(COPY_(right), const(2)));}
+        )
+
+OPERATOR(ADD, "+", 4,
+        {evalValue   = EVAL_SUBTREE_(left) + EVAL_SUBTREE_(right);},
+        {currentNode = ADD_(
+                            DIFF_(left), DIFF_(right));}
+        )
+
+OPERATOR(SUB, "-", 4,
+        {evalValue   = EVAL_SUBTREE_(left) - EVAL_SUBTREE_(right);},
+        {currentNode = SUB_(
+                            DIFF_(left), DIFF_(right));}
+        )
+
+OPERATOR(EQUALS, "=", 4,
+        {evalValue   = EVAL_SUBTREE_(left);},
+        {currentNode = OPERATION_NODE_(DIFF_(left), NULL, EQUALS);}
+        )
