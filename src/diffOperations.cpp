@@ -1,4 +1,5 @@
 #include "differentiator.h"
+#include "colorPrint.h"
 
 #define OPERATOR(NAME, SYMBOL, PRIORITY, ...) {.name = NAME, .symbol = SYMBOL, .priority = PRIORITY},
 const operationInfo operations[] = {
@@ -22,14 +23,11 @@ const Variable *findWordInTable(Differentiator *diff, const Variable *word) {
     return NULL;
 }
 
-// FUNCTION PROTOTYPES //
-node<diffNode> *diffNodeCreate(node<diffNode> nodeData);
-node<diffNode> *copySubtree   (node<diffNode> *subtreeRoot);
-// FUNCTION PROTOTYPES //
-
 node<diffNode> *diffNodeCreate(node<diffNode> nodeData) {
     node<diffNode> *newNode = NULL;
     nodeInitialize(&newNode);
+
+    customPrint(white, underlined, bgDefault, "---------- node initializing ----------\n");
 
     customWarning(newNode != NULL, NULL);
 
@@ -49,16 +47,44 @@ node<diffNode> *diffNodeCreate(node<diffNode> nodeData) {
         newNode->data.depth   += newNode->right->data.depth; 
     }
 
+    customPrint(green, bold, bgDefault, "NODE: %d\t", newNode->data.type);
+
+    switch (newNode->data.type) {
+        case NUMERICAL_NODE:
+            {   
+                customPrint(yellow, bold, bgDefault, "VALUE: %lg\n", newNode->data.nodeValue.value);
+                break;
+            }
+
+        case OPERATION_NODE:
+            {
+                customPrint(yellow, bold, bgDefault, "OP: %d\n", newNode->data.nodeValue.op);
+                break;
+            }
+        
+        case VARIABLE_NODE:
+            {
+                customPrint(yellow, bold, bgDefault, "VARIABLE: %c\n", newNode->data.nodeValue.varIndex);
+                break;
+            }
+
+        default:
+            {
+                break;
+            }
+    }
+
     return newNode;
 }
 
-node<diffNode> *copySubtree   (node<diffNode> *subtreeRoot) {
+node<diffNode> *copySubtree(node<diffNode> *subtreeRoot) {
     customWarning(subtreeRoot != NULL, NULL);
 
     node<diffNode> *newSubtreeRoot = NULL;
     nodeInitialize(&newSubtreeRoot);
 
     customWarning(newSubtreeRoot != NULL, NULL);
+    
 
     newSubtreeRoot->data       = subtreeRoot->data;
     newSubtreeRoot->data.depth = subtreeRoot->data.depth;
@@ -71,9 +97,10 @@ node<diffNode> *copySubtree   (node<diffNode> *subtreeRoot) {
     }          
 
     copySubtreeNode(left);
-    copySubtreeNode(right);                                                                         
+    copySubtreeNode(right);
 
     #undef copySubtreeNode
+
 
     return newSubtreeRoot;
 }

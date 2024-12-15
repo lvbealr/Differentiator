@@ -6,6 +6,16 @@
 
 #include "binaryTree.h"
 
+#define FIND_OPERATION_(...) do {                                      \
+    for (size_t opIndex = 0; opIndex < OPERATIONS_NUMBER; opIndex++) { \
+        if (__VA_ARGS__) {                                             \
+            return operations + opIndex;                               \
+        }                                                              \
+    }                                                                  \
+                                                                       \
+    return NULL;                                                       \
+} while (0)
+
 const size_t MAX_PRIORITY = 4;
 
 enum diffError {
@@ -99,29 +109,23 @@ struct Differentiator {
 };
 
 // FUNCTION PROTOTYPES //
-diffError diffInitialize  (Differentiator *diff, int argc, char *argv[], const char *filename,
-                                                                         const char *funcName,
-                                                                         int         line);
-diffError diffDestruct    (Differentiator *diff);
-diffError bufferInitialize(Differentiator *diff);
-
-diffError evalTree        (Differentiator *diff, double *value);
-
-#define FIND_OPERATION_(...) do {                                      \
-    for (size_t opIndex = 0; opIndex < OPERATIONS_NUMBER; opIndex++) { \
-        if (__VA_ARGS__) {                                             \
-            return operations + opIndex;                               \
-        }                                                              \
-    }                                                                  \
-                                                                       \
-    return NULL;                                                       \
-} while (0)
+diffError diffInitialize      (Differentiator *diff, int argc, char *argv[], const char *filename,
+                                                                             const char *funcName,
+                                                                             int         line);
+diffError diffTablesInitialize(Differentiator *diff);
+diffError diffDestruct        (Differentiator *diff);
+diffError bufferInitialize    (Differentiator *diff);
+diffError evalTree            (Differentiator *diff, double *value);
 
 const operationInfo *findOperationBySymbol(const char *symbol);
 const Variable      *findWordInTable      (Differentiator *diff, const Variable *word);
 
+diffError       differentiateExpression	  (Differentiator *diff, Differentiator *newDiff, char varIndex);
+node<diffNode> *differentiateNode	   	  (Differentiator *diff, Differentiator *newDiff, node<diffNode> *expRoot, char varIndex);
+
 // FUNCTION FOR NODES //
 node<diffNode> *diffNodeCreate(node<diffNode> nodeData);
+node<diffNode> *copySubtree   (node<diffNode> *subtreeRoot);
 // FUNCTION FOR NODES //
 
 // FUNCTION PROROTYPES //

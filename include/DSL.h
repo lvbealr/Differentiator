@@ -9,8 +9,8 @@
 
 // MACROS //    
 #define EVAL_SUBTREE_(subtree)                         evalInternal(diff, (rootNode)->subtree)
-#define DIFF_(direction)                               NULL // TODO
-#define COPY_(subtreeRoot)                             copySubtree   (subtreeRoot)
+#define DIFF_(direction)                               differentiateNode(diff, newDiff, (expRoot)->direction, 'x')
+#define COPY_(subtreeRoot)                             copySubtree(expRoot->subtreeRoot)
 #define CONST_(number)                                 diffNodeCreate(node<diffNode> {.data       = {.type = NUMERICAL_NODE, \
                                                                                       .nodeValue  = {.value = number}},      \
                                                                                       .left       = NULL,                    \

@@ -11,7 +11,7 @@
   diffTreeDump(treePtr);                                                                       \
 }
 
-#define DIFF_SAVE_DUMP_IMAGE(treePtr) {                                 \
+#define DIFF_SAVE_DUMP_IMAGE_(treePtr) {                                 \
   DIFF_DUMP_(treePtr);                                                  \
                                                                         \
   char *buffer = (char *)calloc(MAX_CMD_BUFFER_SIZE, sizeof(char));     \

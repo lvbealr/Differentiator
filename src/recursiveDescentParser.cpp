@@ -245,8 +245,8 @@ node<diffNode> *getF(Differentiator *diff) {
     }
 
     else {
-        #define OPERATOR(name, symbol, ...) {                                                        \
-            case name:                                                                               \
+        #define OPERATOR(NAME, ...) {                                                                \
+            case NAME:                                                                               \
                 {                                                                                    \
                     diff->tokens->current++;                                                         \
                     node_ = getE(diff);                                                              \
@@ -260,7 +260,7 @@ node<diffNode> *getF(Differentiator *diff) {
                                                                                                      \
                     $ALL_CHECK();                                                                    \
                                                                                                      \
-                    return name##_(node_, NULL);                                                     \
+                    return NAME##_(node_, NULL);                                                     \
                                                                                                      \
                     break;                                                                           \
                 }                                                                                    \
