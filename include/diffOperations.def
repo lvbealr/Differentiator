@@ -1,83 +1,121 @@
 OPERATOR(OPEN_BRACKET, "(", 0,
-        {},
-        {}
-        )
+	{{}},
+	{{}},
+	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}
+	)
 
 OPERATOR(CLOSE_BRACKET, ")", 0,
-        {},
-        {}
-        )
+	{{}},
+	{{}},
+	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}
+	)
 
 OPERATOR(POW, "^", 1,
-        {evalValue   = pow(EVAL_SUBTREE_(left), EVAL_SUBTREE_(right));},
-        {currentNode = MUL_(
-                            POW_(COPY_(left), COPY_(right)),
-                            ADD_(
-                                MUL_(DIFF_(right), LN_(COPY_(left), NULL)),
-                            DIV_(
-                                COPY_(right), COPY_(left))));}
-        )
+	{evalValue   = pow(EVAL_SUBTREE_(&(*rootNode)->left), EVAL_SUBTREE_(&(*rootNode)->right)); replaceNode(diff, rootNode, CONST_(evalValue));},
+	{currentNode = MUL_(
+				POW_(COPY_((*rootNode)->left), COPY_((*rootNode)->right)),
+				ADD_(
+				MUL_(DIFF_(&(*rootNode)->right), LN_(COPY_((*rootNode)->left), NULL)),
+				DIV_(
+				COPY_((*rootNode)->right), COPY_((*rootNode)->left))));},
+	{++(*simplificationsNumber); replaceNode(diff, rootNode, CONST_(0));},
+	{++(*simplificationsNumber); replaceNode(diff, rootNode, CONST_(1));},
+	{++(*simplificationsNumber); replaceNode(diff, rootNode, CONST_(1));},
+	{++(*simplificationsNumber); replaceNode(diff, rootNode, (*rootNode)->left);},
+	{{}},
+	{++(*simplificationsNumber); replaceNode(diff, rootNode, DIV_(CONST_(1), COPY_((*rootNode)->left)));}
+	)
 
 OPERATOR(SIN, "sin", 2,
-        {evalValue   = sin(EVAL_SUBTREE_(left));},
-        {currentNode = MUL_(
-                            DIFF_(left),
-                            COS_(COPY_(left), NULL));}
-        )
+	{evalValue   = sin(EVAL_SUBTREE_(&(*rootNode)->left)); replaceNode(diff, rootNode, CONST_(evalValue));},
+	{currentNode = MUL_(
+				DIFF_(&(*rootNode)->left),
+				COS_(COPY_((*rootNode)->left), NULL));},
+	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}
+	)
 
 OPERATOR(COS, "cos", 2,
-        {evalValue   = cos(EVAL_SUBTREE_(left));},
-        {currentNode = MUL_(
-                            DIFF_(left),
-                            MUL_(CONST_(-1), SIN_(COPY_(left), NULL)));}
-        )
+	{evalValue   = cos(EVAL_SUBTREE_(&(*rootNode)->left)); replaceNode(diff, rootNode, CONST_(evalValue));},
+	{currentNode = MUL_(
+				DIFF_(&(*rootNode)->left),
+				MUL_(CONST_(-1), SIN_(COPY_((*rootNode)->left), NULL)));},
+	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}
+	)
 
 OPERATOR(SQRT, "sqrt", 2,
-        {evalValue   = sqrt(EVAL_SUBTREE_(left));},
-        {currentNode = DIV_(
-                            DIFF_(left),
-                            MUL_(CONST_(2), SQRT_(COPY_(left), NULL)));}
-        )
+	{evalValue   = sqrt(EVAL_SUBTREE_(&(*rootNode)->left)); replaceNode(diff, rootNode, CONST_(evalValue));},
+	{currentNode = DIV_(
+				DIFF_(&(*rootNode)->left),
+				MUL_(CONST_(2), SQRT_(COPY_((*rootNode)->left), NULL)));},
+	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}
+	)
 
 OPERATOR(LN, "ln", 2,
-        {evalValue   = log(EVAL_SUBTREE_(left));},
-        {currentNode = DIV_(DIFF_(left), COPY_(left));}
-        )
+	{evalValue   = log(EVAL_SUBTREE_(&(*rootNode)->left)); replaceNode(diff, rootNode, CONST_(evalValue));},
+	{currentNode = DIV_(DIFF_(&(*rootNode)->left), COPY_((*rootNode)->left));},
+	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}
+	)
 
 OPERATOR(EXP, "exp", 2,
-        {evalValue   = exp(EVAL_SUBTREE_(left));},
-        {currentNode = MUL_(DIFF_(left), EXP_(COPY_(left), NULL));}
-        )
+	{evalValue   = exp(EVAL_SUBTREE_(&(*rootNode)->left)); replaceNode(diff, rootNode, CONST_(evalValue));},
+	{currentNode = MUL_(DIFF_(&(*rootNode)->left), EXP_(COPY_((*rootNode)->left), NULL));},
+	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}
+	)
 
 OPERATOR(MUL, "*", 3,
-        {evalValue   = EVAL_SUBTREE_(left) * EVAL_SUBTREE_(right);},
-        {currentNode = ADD_(
-                            MUL_(DIFF_(left), COPY_(right)),
-                            MUL_(COPY_(left), DIFF_(right)));}
-        )
+	{evalValue   = EVAL_SUBTREE_(&(*rootNode)->left) * EVAL_SUBTREE_(&(*rootNode)->right); replaceNode(diff, rootNode, CONST_(evalValue));},
+	{currentNode = ADD_(
+				MUL_(DIFF_(&(*rootNode)->left), COPY_((*rootNode)->right)),
+				MUL_(COPY_((*rootNode)->left), DIFF_(&(*rootNode)->right)));},
+	{++(*simplificationsNumber); replaceNode(diff, rootNode, CONST_(0));},
+	{++(*simplificationsNumber); replaceNode(diff, rootNode, CONST_(0));},
+	{++(*simplificationsNumber); replaceNode(diff, rootNode, (*rootNode)->right);},
+	{++(*simplificationsNumber); replaceNode(diff, rootNode, (*rootNode)->left);},
+	{{}},
+	{{}}
+	)
 
 OPERATOR(DIV, "/", 3,
-        {evalValue   = EVAL_SUBTREE_(left) / EVAL_SUBTREE_(right);},
-        {currentNode = DIV_(
-                            SUB_(
-                                MUL_(DIFF_(left), COPY_(right)),
-                                MUL_(COPY_(left), DIFF_(right))),
-                                POW_(COPY_(right), CONST_(2)));}
-        )
+	{evalValue   = EVAL_SUBTREE_(&(*rootNode)->left) / EVAL_SUBTREE_(&(*rootNode)->right); replaceNode(diff, rootNode, CONST_(evalValue));},
+	{currentNode = DIV_(
+				SUB_(
+				MUL_(DIFF_(&(*rootNode)->left), COPY_((*rootNode)->right)),
+				MUL_(COPY_((*rootNode)->left), DIFF_(&(*rootNode)->right))),
+				POW_(COPY_((*rootNode)->right), CONST_(2)));},
+	{++(*simplificationsNumber); replaceNode(diff, rootNode, CONST_(0));},
+	{{}},
+	{{}},
+	{++(*simplificationsNumber); replaceNode(diff, rootNode, (*rootNode)->left);},
+	{{}},
+	{++(*simplificationsNumber); replaceNode(diff, rootNode, MUL_(CONST_(-1), COPY_((*rootNode)->left)));}
+	)
 
 OPERATOR(ADD, "+", 4,
-        {evalValue   = EVAL_SUBTREE_(left) + EVAL_SUBTREE_(right);},
-        {currentNode = ADD_(
-                            DIFF_(left), DIFF_(right));}
-        )
+	{evalValue   = EVAL_SUBTREE_(&(*rootNode)->left) + EVAL_SUBTREE_(&(*rootNode)->right); replaceNode(diff, rootNode, CONST_(evalValue));},
+	{currentNode = ADD_(
+				DIFF_(&(*rootNode)->left), DIFF_(&(*rootNode)->right));},
+	{++(*simplificationsNumber); replaceNode(diff, rootNode, (*rootNode)->right);},
+	{++(*simplificationsNumber); replaceNode(diff, rootNode, (*rootNode)->left);},
+	{{}},
+	{{}},
+	{{}},
+	{{}}
+	)
 
 OPERATOR(SUB, "-", 4,
-        {evalValue   = EVAL_SUBTREE_(left) - EVAL_SUBTREE_(right);},
-        {currentNode = SUB_(
-                            DIFF_(left), DIFF_(right));}
-        )
+	{evalValue   = EVAL_SUBTREE_(&(*rootNode)->left) - EVAL_SUBTREE_(&(*rootNode)->right); replaceNode(diff, rootNode, CONST_(evalValue));},
+	{currentNode = SUB_(
+				DIFF_(&(*rootNode)->left), DIFF_(&(*rootNode)->right));},
+	{++(*simplificationsNumber); replaceNode(diff, rootNode, MUL_(CONST_(-1), COPY_((*rootNode)->right)));},
+	{++(*simplificationsNumber); replaceNode(diff, rootNode, (*rootNode)->left);},
+	{{}},
+	{{}},
+	{{}},
+	{{}}
+	)
 
 OPERATOR(EQUALS, "=", 4,
-        {evalValue   = EVAL_SUBTREE_(left);},
-        {currentNode = OPERATION_NODE_(DIFF_(left), NULL, EQUALS);}
-        )
+	{evalValue   = EVAL_SUBTREE_(&(*rootNode)->left); replaceNode(diff, rootNode, CONST_(evalValue));},
+	{currentNode = OPERATION_NODE_(DIFF_(&(*rootNode)->left), NULL, EQUALS);},
+	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}
+	)

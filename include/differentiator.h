@@ -116,12 +116,13 @@ diffError diffTablesInitialize(Differentiator *diff);
 diffError diffDestruct        (Differentiator *diff);
 diffError bufferInitialize    (Differentiator *diff);
 diffError evalTree            (Differentiator *diff, double *value);
+double    evalInternal        (Differentiator *diff, node<diffNode> **rootNode);
 
 const operationInfo *findOperationBySymbol(const char *symbol);
 const Variable      *findWordInTable      (Differentiator *diff, const Variable *word);
 
 diffError       differentiateExpression	  (Differentiator *diff, Differentiator *newDiff, char varIndex);
-node<diffNode> *differentiateNode	   	  (Differentiator *diff, Differentiator *newDiff, node<diffNode> *expRoot, char varIndex);
+node<diffNode> *differentiateNode	   	  (Differentiator *diff, Differentiator *newDiff, node<diffNode> **rootNode, char varIndex);
 
 // FUNCTION FOR NODES //
 node<diffNode> *diffNodeCreate(node<diffNode> nodeData);

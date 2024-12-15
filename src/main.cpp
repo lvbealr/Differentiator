@@ -6,6 +6,7 @@
 #include "DSL.h"
 #include "lexer.h"
 #include "recursiveDescentParser.h"
+#include "simplifyTree.h"
 
 int main(int argc, char *argv[]) {
   Differentiator Diff = {};
@@ -16,16 +17,22 @@ int main(int argc, char *argv[]) {
 
   Diff.diffTree.root = getG(&Diff);
 
-  callPrintBinaryTree(&Diff.diffTree, INFIX, stdout);
+  // callPrintBinaryTree(&Diff.diffTree, INFIX, stdout);
   
   Differentiator newDiff = {};
-
   differentiateExpression(&Diff, &newDiff, 'x');
-  
-  callPrintBinaryTree(&newDiff.diffTree, INFIX, stdout);
+
+  // DIFF_DUMP_(&Diff.diffTree);
+  // DIFF_SAVE_DUMP_IMAGE_(&Diff.diffTree);
+
+  simplifyTree(&newDiff);
 
   DIFF_DUMP_(&newDiff.diffTree);
   DIFF_SAVE_DUMP_IMAGE_(&newDiff.diffTree);
+  // callPrintBinaryTree(&newDiff.diffTree, INFIX, stdout);
+
+  // DIFF_DUMP_(&newDiff.diffTree);
+  // DIFF_SAVE_DUMP_IMAGE_(&newDiff.diffTree);
   
   // DIFF_DUMP_(&Diff.diffTree);
   // DIFF_SAVE_DUMP_IMAGE_(&Diff.diffTree);

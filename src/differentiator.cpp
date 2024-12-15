@@ -5,8 +5,18 @@
 #include "lexer.h"
 #include "diffDump.h"
 #include "colorPrint.h"
+#include "simplifyTree.h"
 
 static const size_t MAX_VARIABLE_COUNT = 3;
+
+static void setInputFilePath(Differentiator **diff) {
+    customWarning((*diff)                    != NULL, (void) 1);
+    customWarning((*diff)->buffer            != NULL, (void) 1);
+    customWarning((*diff)->buffer->filePath  != NULL, (void) 1);
+
+    customPrint(green, bold, bgDefault, "Enter Path To Input File: ");
+    scanf("%s", (*diff)->buffer->filePath);
+}
 
 diffError diffInitialize(Differentiator *diff, int argc, char *argv[], const char *fileName,
                                                                        const char *funcName,
@@ -19,7 +29,7 @@ diffError diffInitialize(Differentiator *diff, int argc, char *argv[], const cha
     parseConsole        (argc, argv, &diff->diffTree);
     binaryTreeSetInfo   (&diff->diffTree);
     
-    diff->buffer->filePath = (char *)"IO/input.txt"; // TODO
+    setInputFilePath(&diff);
     readFromFile(diff);
 
     diffTablesInitialize(diff);
@@ -43,22 +53,24 @@ diffError diffTablesInitialize(Differentiator *diff) {
     return NO_DIFF_ERRORS;
 }
 
-static double evalInternal(Differentiator *diff, node<diffNode> *rootNode) {
+double evalInternal(Differentiator *diff, node<diffNode> **rootNode) {
     customWarning(diff     != NULL, DIFF_NULL_PTR);
-    customWarning(rootNode != NULL, NODE_NULL_PTR);
+    customWarning((*rootNode) != NULL, NODE_NULL_PTR);
 
-    switch (rootNode->data.type) {
+    switch ((*rootNode)->data.type) {
         case NUMERICAL_NODE: 
             {
-                return rootNode->data.nodeValue.value;
+                customPrint(yellow, bold, bgDefault, "%s %lg\n", __PRETTY_FUNCTION__, (*rootNode)->data.nodeValue.value);
+                return (*rootNode)->data.nodeValue.value;
             }
         
         case OPERATION_NODE:
-            {
+            {   
+                customPrint(yellow, bold, bgDefault, "%s %d\n", __PRETTY_FUNCTION__, (*rootNode)->data.nodeValue.op);
                 double evalValue = NAN;
 
                 #define OPERATOR(NAME, SYMBOL, PRIORITY, EVAL_FUNCTION, ...)               \
-                    if (rootNode->data.nodeValue.op == NAME) {                             \
+                    if ((*rootNode)->data.nodeValue.op == NAME) {                          \
                         EVAL_FUNCTION                                                      \
                     }
 
@@ -71,7 +83,8 @@ static double evalInternal(Differentiator *diff, node<diffNode> *rootNode) {
 
         case VARIABLE_NODE:
             {
-                      Variable  patternVariable = {.variableName = &rootNode->data.nodeValue.varIndex};
+                customPrint(lightblue, bold, bgDefault, "%c\n", (*rootNode)->data.nodeValue.varIndex);
+                      Variable  patternVariable = {.variableName = &(*rootNode)->data.nodeValue.varIndex};
                 const Variable *findVariable    = findWordInTable(diff, &patternVariable);
                 return findVariable->variableValue;
             }
@@ -89,7 +102,7 @@ diffError evalTree(Differentiator *diff, double *value) {
     customWarning(diff  != NULL, DIFF_NULL_PTR);
     customWarning(value != NULL, BAD_POINTER);
 
-    *value = evalInternal(diff, diff->diffTree.root);
+    *value = evalInternal(diff, &diff->diffTree.root);
 
     return NO_DIFF_ERRORS;
 }
@@ -113,32 +126,43 @@ diffError differentiateExpression(Differentiator *diff, Differentiator *newDiff,
 
     FREE_(newDiff->diffTree.root);
 
-    newDiff->diffTree.root = differentiateNode(diff ,newDiff, diff->diffTree.root, varIndex);
+    newDiff->diffTree.root = (node<diffNode> *)calloc(1, sizeof(node<diffNode>));
+    customPrint(black, bold, bgDefault, "..................%p..................\n", newDiff->diffTree.root);
+
+    newDiff->diffTree.root = differentiateNode(diff, newDiff, &diff->diffTree.root, varIndex);
+
+    customPrint(red, bold, bgDefault, "%p\n", newDiff->diffTree.root);
 
     return NO_DIFF_ERRORS;
 }   
 
-node<diffNode> *differentiateNode(Differentiator *diff, Differentiator *newDiff, node<diffNode> *expRoot, char varIndex) {
+node<diffNode> *differentiateNode(Differentiator *diff, Differentiator *newDiff, node<diffNode> **rootNode, char varIndex) {
     customWarning(diff                   != NULL, NULL);
     customWarning(newDiff                != NULL, NULL);
+    customWarning((*rootNode)            != NULL, NULL);
 
-    if (expRoot->data.type == NUMERICAL_NODE || (expRoot->data.type == VARIABLE_NODE && expRoot->data.nodeValue.varIndex != varIndex)) {
+    customPrint(green, bold, bgDefault, "Я ЗДЕСЬ\n");
+
+    if ((*rootNode)->data.type == NUMERICAL_NODE || ((*rootNode)->data.type == VARIABLE_NODE && (*rootNode)->data.nodeValue.varIndex != varIndex)) {
         return CONST_(0);
     }
 
-    if (expRoot->data.type == VARIABLE_NODE && expRoot->data.nodeValue.varIndex == varIndex) {
+    if ((*rootNode)->data.type == VARIABLE_NODE && (*rootNode)->data.nodeValue.varIndex == varIndex) {
+        customPrint(yellow, bold, bgDefault, "СОЗДАЛ ЕДИНИЧКУ\n");
         return CONST_(1);
     }
 
+    customPrint(red, bold, bgDefault, "НИЧЕГО НЕ СОЗДАЛ\n");
+
     node<diffNode> *currentNode = NULL;
 
-    #define OPERATOR(NAME, SYMBOL, PRIORITY, EVAL_FUNCTION, DIFF_FUNCTION)                    \
-        if (expRoot->data.nodeValue.op == NAME) {                                             \
+    #define OPERATOR(NAME, SYMBOL, PRIORITY, EVAL_FUNCTION, DIFF_FUNCTION, ...)               \
+        if ((*rootNode)->data.nodeValue.op == NAME) {                                         \
             customPrint(red, bold, bgDefault, "================ START ================\n");   \
             customPrint(purple, bold, bgDefault, "NODE: %s\n", #NAME);                        \
                                                                                               \
             DIFF_FUNCTION                                                                     \
-            fprintf(stderr, "%p", currentNode);                                               \
+            customPrint(purple, bold, bgDefault, "ПРОШЕЛ, %p", currentNode);                  \
                                                                                               \
             if (currentNode->left) {                                                          \
                 currentNode->left->parent  = currentNode;                                     \

@@ -1,5 +1,6 @@
 #include "differentiator.h"
 #include "colorPrint.h"
+#include "DSL.h"
 
 #define OPERATOR(NAME, SYMBOL, PRIORITY, ...) {.name = NAME, .symbol = SYMBOL, .priority = PRIORITY},
 const operationInfo operations[] = {
@@ -85,7 +86,6 @@ node<diffNode> *copySubtree(node<diffNode> *subtreeRoot) {
 
     customWarning(newSubtreeRoot != NULL, NULL);
     
-
     newSubtreeRoot->data       = subtreeRoot->data;
     newSubtreeRoot->data.depth = subtreeRoot->data.depth;
 
@@ -100,7 +100,6 @@ node<diffNode> *copySubtree(node<diffNode> *subtreeRoot) {
     copySubtreeNode(right);
 
     #undef copySubtreeNode
-
 
     return newSubtreeRoot;
 }
