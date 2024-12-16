@@ -8,7 +8,8 @@ const size_t MAX_WORD_LENGTH = 10;
 enum parseError {
     NO_PARSE_ERRORS      = 0,
     DIFF_PTR_ERROR       = 1,
-    VARIABLE_TABLE_ERROR = 2
+    VARIABLE_TABLE_ERROR = 2,
+    TOKENS_TABLE_ERROR   = 3
 };
 
 // FUNCTION PROTOTYPES //

@@ -12,12 +12,35 @@ OPERATOR(CLOSE_BRACKET, ")", 0,
 
 OPERATOR(POW, "^", 1,
 	{evalValue   = pow(EVAL_SUBTREE_(&(*rootNode)->left), EVAL_SUBTREE_(&(*rootNode)->right)); replaceNode(diff, rootNode, CONST_(evalValue));},
-	{currentNode = MUL_(
-				POW_(COPY_((*rootNode)->left), COPY_((*rootNode)->right)),
-				ADD_(
-				MUL_(DIFF_(&(*rootNode)->right), LN_(COPY_((*rootNode)->left), NULL)),
-				DIV_(
-				COPY_((*rootNode)->right), COPY_((*rootNode)->left))));},
+	{	if ((*rootNode)->left->data.type != NUMERICAL_NODE && (*rootNode)->right->data.type != NUMERICAL_NODE) {
+		currentNode = MUL_(
+							EXP_(
+								MUL_(COPY_((*rootNode)->right), LN_(COPY_((*rootNode)->left), NULL)), NULL), 
+								ADD_(
+									MUL_(DIFF_(&(*rootNode)->right), LN_(COPY_((*rootNode)->left), NULL)), 
+									MUL_(DIV_(DIFF_(&(*rootNode)->left), COPY_((*rootNode)->left)),
+							COPY_((*rootNode)->right))) );
+	}
+
+		else if ((*rootNode)->right->data.type == NUMERICAL_NODE) {
+			currentNode = MUL_(MUL_(
+								COPY_((*rootNode)->right),
+								POW_(
+									COPY_((*rootNode)->left),
+									CONST_((*rootNode)->right->data.nodeValue.value - 1)
+									)),
+							   DIFF_(&(*rootNode)->left));
+		}
+
+		else if ((*rootNode)->left->data.type == NUMERICAL_NODE) {
+			currentNode = MUL_(POW_(
+									COPY_((*rootNode)->left),
+									COPY_((*rootNode)->right)
+									),
+							   LN_(COPY_((*rootNode)->left), NULL));
+		}
+	},
+
 	{++(*simplificationsNumber); replaceNode(diff, rootNode, CONST_(0));},
 	{++(*simplificationsNumber); replaceNode(diff, rootNode, CONST_(1));},
 	{++(*simplificationsNumber); replaceNode(diff, rootNode, CONST_(1));},

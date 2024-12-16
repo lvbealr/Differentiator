@@ -11,31 +11,23 @@
 int main(int argc, char *argv[]) {
   Differentiator Diff = {};
 
-  diffInitialize(&Diff, argc, argv, __FILE__, __PRETTY_FUNCTION__, __LINE__);
-
+  diffInitialize (&Diff, argc, argv, __FILE__, __PRETTY_FUNCTION__, __LINE__);
   expressionLexer(&Diff);
 
   Diff.diffTree.root = getG(&Diff);
 
-  // callPrintBinaryTree(&Diff.diffTree, INFIX, stdout);
-  
   Differentiator newDiff = {};
   differentiateExpression(&Diff, &newDiff, 'x');
 
-  // DIFF_DUMP_(&Diff.diffTree);
-  // DIFF_SAVE_DUMP_IMAGE_(&Diff.diffTree);
+  callPrintBinaryTree(&newDiff.diffTree, INFIX, stdout);
 
   simplifyTree(&newDiff);
 
-  DIFF_DUMP_(&newDiff.diffTree);
+  DIFF_DUMP_           (&newDiff.diffTree);
   DIFF_SAVE_DUMP_IMAGE_(&newDiff.diffTree);
-  // callPrintBinaryTree(&newDiff.diffTree, INFIX, stdout);
 
-  // DIFF_DUMP_(&newDiff.diffTree);
-  // DIFF_SAVE_DUMP_IMAGE_(&newDiff.diffTree);
-  
-  // DIFF_DUMP_(&Diff.diffTree);
-  // DIFF_SAVE_DUMP_IMAGE_(&Diff.diffTree);
+  diffDestruct(&Diff);
+  // diffDestruct(&newDiff); // TODO
 
   return 0;
 }

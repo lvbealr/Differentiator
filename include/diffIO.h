@@ -14,7 +14,9 @@ const size_t MAX_FILEPATH_SIZE = 100;
 const size_t MAX_BUFFER_SIZE   = 300;
 
 // FUNCTION PROTOTYPES //
-diffError readFromFile(Differentiator *diff);
+diffError bufferInitialize(Differentiator *diff);
+diffError bufferDestruct  (Differentiator *diff);
+diffError readFromFile    (Differentiator *diff);
 
 template<>
 inline binaryTreeError printNode(node<diffNode> *currentNode, FILE *stream);

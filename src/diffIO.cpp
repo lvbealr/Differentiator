@@ -22,6 +22,17 @@ diffError bufferInitialize(Differentiator *diff) {
     return NO_DIFF_ERRORS;
 }
 
+diffError bufferDestruct(Differentiator *diff) {
+    customWarning(diff         != NULL, DIFF_NULL_PTR);
+    customWarning(diff->buffer != NULL, BUFFER_ERROR);
+
+    FREE_(diff->buffer->text);
+    FREE_(diff->buffer->filePath);
+    FREE_(diff->buffer);
+
+    return NO_DIFF_ERRORS;
+}
+
 diffError readFromFile(Differentiator *diff) {
     customWarning(diff != NULL, DIFF_NULL_PTR);
 
@@ -29,7 +40,8 @@ diffError readFromFile(Differentiator *diff) {
     stat(diff->buffer->filePath, &fileData);
 
     diff->buffer->textSize = (size_t)fileData.st_size;
-    diff->buffer->text = (char *)calloc(diff->buffer->textSize, sizeof(char));
+    diff->buffer->text     = (char *)calloc(diff->buffer->textSize, sizeof(char));
+
     int openFile = open(diff->buffer->filePath, O_RDONLY);
     customWarning(openFile != -1, (diffError) NO_SUCH_FILE);
 

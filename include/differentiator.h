@@ -52,9 +52,9 @@ const size_t OPERATIONS_NUMBER =
 #undef OPERATOR
 
 struct operationInfo {
-  Operation   name     =   {};
-  const char *symbol   =   {};
-  size_t      priority =    0;
+  Operation   name     = {};
+  const char *symbol   = {};
+  size_t      priority = 0;
 };
 
 union nodeData {
@@ -66,7 +66,6 @@ union nodeData {
 struct diffNode {
   nodeType  type       = NUMERICAL_NODE;
   nodeData  nodeValue  = {.value = NAN};
-  size_t    depth      = 0;
 };
 
 struct Variable {
@@ -77,7 +76,7 @@ struct Variable {
 
 struct variableTable {
   size_t    variableCount = 0;
-  Variable *variableArray = NULL; // TODO
+  Variable *variableArray = NULL; 
 };
 
 struct Buffer {
@@ -97,7 +96,7 @@ struct Token {
 struct tokensData {
   size_t current    = 0;
   size_t count      = 0;
-  Token *tokenArray = NULL; // TODO
+  Token *tokenArray = NULL;
 };
 
 struct Differentiator {
@@ -112,9 +111,12 @@ struct Differentiator {
 diffError diffInitialize      (Differentiator *diff, int argc, char *argv[], const char *filename,
                                                                              const char *funcName,
                                                                              int         line);
-diffError diffTablesInitialize(Differentiator *diff);
 diffError diffDestruct        (Differentiator *diff);
+
+diffError diffTablesInitialize(Differentiator *diff);
+diffError diffTablesDestruct  (Differentiator *diff);
 diffError bufferInitialize    (Differentiator *diff);
+
 diffError evalTree            (Differentiator *diff, double *value);
 double    evalInternal        (Differentiator *diff, node<diffNode> **rootNode);
 
@@ -122,7 +124,7 @@ const operationInfo *findOperationBySymbol(const char *symbol);
 const Variable      *findWordInTable      (Differentiator *diff, const Variable *word);
 
 diffError       differentiateExpression	  (Differentiator *diff, Differentiator *newDiff, char varIndex);
-node<diffNode> *differentiateNode	   	  (Differentiator *diff, Differentiator *newDiff, node<diffNode> **rootNode, char varIndex);
+node<diffNode> *differentiateNode	   	    (Differentiator *diff, Differentiator *newDiff, node<diffNode> **rootNode, char varIndex);
 
 // FUNCTION FOR NODES //
 node<diffNode> *diffNodeCreate(node<diffNode> nodeData);

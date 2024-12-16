@@ -4,13 +4,11 @@
 #include "differentiator.h"
 #include "binaryTree.h"
 
-// FUNCTION PROTOTYPES //
-// FUNCTION PROTOTYPES //
-
 // MACROS //    
-#define EVAL_SUBTREE_(subtree)                         evalInternal(diff, subtree)
+#define EVAL_SUBTREE_(subtree)                         evalInternal     (diff, subtree)
 #define DIFF_(direction)                               differentiateNode(diff, newDiff, direction, 'x')
-#define COPY_(subtreeRoot)                             copySubtree(subtreeRoot)
+#define COPY_(subtreeRoot)                             copySubtree      (subtreeRoot)
+
 #define CONST_(number)                                 diffNodeCreate(node<diffNode> {.data       = {.type = NUMERICAL_NODE, \
                                                                                       .nodeValue  = {.value = number}},      \
                                                                                       .left       = NULL,                    \
@@ -39,9 +37,9 @@
 #define SQRT_(leftNode, rightNode) OPERATION_NODE_(leftNode, rightNode, SQRT)
 #define LN_(leftNode,   rightNode) OPERATION_NODE_(leftNode, rightNode, LN  )
 #define EXP_(leftNode,  rightNode) OPERATION_NODE_(leftNode, rightNode, EXP )
-#define OPEN_BRACKET_(...)  NULL
-#define CLOSE_BRACKET_(...) NULL
-#define EQUALS_(...)        NULL
+#define OPEN_BRACKET_(...)         NULL
+#define CLOSE_BRACKET_(...)        NULL
+#define EQUALS_(...)               NULL
 // MACROS //
 
 #endif // DSL_H_

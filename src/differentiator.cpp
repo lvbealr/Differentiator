@@ -37,6 +37,17 @@ diffError diffInitialize(Differentiator *diff, int argc, char *argv[], const cha
     return NO_DIFF_ERRORS;
 }
 
+diffError diffDestruct(Differentiator *diff) {
+    customWarning(diff != NULL, DIFF_NULL_PTR);
+
+    diffTablesDestruct    (diff);
+    bufferDestruct        (diff);
+    
+    treeDestruct          (&diff->diffTree);
+    
+    return NO_DIFF_ERRORS;
+}
+
 diffError diffTablesInitialize(Differentiator *diff) {
     customWarning(diff != NULL, DIFF_NULL_PTR);
 
@@ -53,6 +64,23 @@ diffError diffTablesInitialize(Differentiator *diff) {
     return NO_DIFF_ERRORS;
 }
 
+diffError diffTablesDestruct(Differentiator *diff) {
+    customWarning(diff            != NULL, (diffError) DIFF_NULL_PTR);
+    customWarning(diff->tokens    != NULL, (diffError) TOKENS_TABLE_ERROR);
+    customWarning(diff->variables != NULL, (diffError) VARIABLE_TABLE_ERROR);
+
+    FREE_(diff->variables->variableArray);
+    diff->variables->variableCount = 0;
+    FREE_(diff->variables);
+
+    FREE_(diff->tokens->tokenArray);
+    diff->tokens->count   = 0;
+    diff->tokens->current = 0;
+    FREE_(diff->tokens);
+
+    return NO_DIFF_ERRORS;
+}
+
 double evalInternal(Differentiator *diff, node<diffNode> **rootNode) {
     customWarning(diff     != NULL, DIFF_NULL_PTR);
     customWarning((*rootNode) != NULL, NODE_NULL_PTR);
@@ -60,13 +88,11 @@ double evalInternal(Differentiator *diff, node<diffNode> **rootNode) {
     switch ((*rootNode)->data.type) {
         case NUMERICAL_NODE: 
             {
-                customPrint(yellow, bold, bgDefault, "%s %lg\n", __PRETTY_FUNCTION__, (*rootNode)->data.nodeValue.value);
                 return (*rootNode)->data.nodeValue.value;
             }
         
         case OPERATION_NODE:
             {   
-                customPrint(yellow, bold, bgDefault, "%s %d\n", __PRETTY_FUNCTION__, (*rootNode)->data.nodeValue.op);
                 double evalValue = NAN;
 
                 #define OPERATOR(NAME, SYMBOL, PRIORITY, EVAL_FUNCTION, ...)               \
@@ -83,7 +109,6 @@ double evalInternal(Differentiator *diff, node<diffNode> **rootNode) {
 
         case VARIABLE_NODE:
             {
-                customPrint(lightblue, bold, bgDefault, "%c\n", (*rootNode)->data.nodeValue.varIndex);
                       Variable  patternVariable = {.variableName = &(*rootNode)->data.nodeValue.varIndex};
                 const Variable *findVariable    = findWordInTable(diff, &patternVariable);
                 return findVariable->variableValue;
@@ -127,11 +152,7 @@ diffError differentiateExpression(Differentiator *diff, Differentiator *newDiff,
     FREE_(newDiff->diffTree.root);
 
     newDiff->diffTree.root = (node<diffNode> *)calloc(1, sizeof(node<diffNode>));
-    customPrint(black, bold, bgDefault, "..................%p..................\n", newDiff->diffTree.root);
-
     newDiff->diffTree.root = differentiateNode(diff, newDiff, &diff->diffTree.root, varIndex);
-
-    customPrint(red, bold, bgDefault, "%p\n", newDiff->diffTree.root);
 
     return NO_DIFF_ERRORS;
 }   
@@ -141,28 +162,19 @@ node<diffNode> *differentiateNode(Differentiator *diff, Differentiator *newDiff,
     customWarning(newDiff                != NULL, NULL);
     customWarning((*rootNode)            != NULL, NULL);
 
-    customPrint(green, bold, bgDefault, "Я ЗДЕСЬ\n");
-
     if ((*rootNode)->data.type == NUMERICAL_NODE || ((*rootNode)->data.type == VARIABLE_NODE && (*rootNode)->data.nodeValue.varIndex != varIndex)) {
         return CONST_(0);
     }
 
     if ((*rootNode)->data.type == VARIABLE_NODE && (*rootNode)->data.nodeValue.varIndex == varIndex) {
-        customPrint(yellow, bold, bgDefault, "СОЗДАЛ ЕДИНИЧКУ\n");
         return CONST_(1);
     }
-
-    customPrint(red, bold, bgDefault, "НИЧЕГО НЕ СОЗДАЛ\n");
 
     node<diffNode> *currentNode = NULL;
 
     #define OPERATOR(NAME, SYMBOL, PRIORITY, EVAL_FUNCTION, DIFF_FUNCTION, ...)               \
         if ((*rootNode)->data.nodeValue.op == NAME) {                                         \
-            customPrint(red, bold, bgDefault, "================ START ================\n");   \
-            customPrint(purple, bold, bgDefault, "NODE: %s\n", #NAME);                        \
-                                                                                              \
             DIFF_FUNCTION                                                                     \
-            customPrint(purple, bold, bgDefault, "ПРОШЕЛ, %p", currentNode);                  \
                                                                                               \
             if (currentNode->left) {                                                          \
                 currentNode->left->parent  = currentNode;                                     \
@@ -172,7 +184,6 @@ node<diffNode> *differentiateNode(Differentiator *diff, Differentiator *newDiff,
             }                                                                                 \
                                                                                               \
             DIFF_DUMP_(&newDiff->diffTree);                                                   \
-            customPrint(green, bold, bgDefault, "================= END =================\n"); \
             return currentNode;                                                               \
         }                                                                    
 
