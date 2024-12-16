@@ -130,11 +130,15 @@ latexError writePhrase(const char **array, FILE *latexStream, const size_t array
     customWarning(array       != NULL, PHRASE_ERROR);
     customWarning(latexStream != NULL, LATEX_STREAM_ERROR);
 
+    static size_t seed = 0;
+    srand(seed);
+
     size_t phrase = (size_t) rand() % arraySize;
+    seed          = phrase;
 
     customPrint(red, bold, bgDefault, "%lu\n", phrase);
 
-    fprintf(latexStream, "\\section*{%s}\n", array[phrase]);
+    fprintf(latexStream, "\\section*{%s}\n", array[(size_t) rand() % arraySize]);
 
     return NO_LATEX_ERRORS;
 }
