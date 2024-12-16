@@ -105,6 +105,7 @@ struct Differentiator {
   diffError            errorStatus = NO_DIFF_ERRORS;
   Buffer              *buffer      =             {};
   tokensData          *tokens      =             {};
+  char                *latexPath   =             {};
 };
 
 // FUNCTION PROTOTYPES //
@@ -123,8 +124,8 @@ double    evalInternal        (Differentiator *diff, node<diffNode> **rootNode);
 const operationInfo *findOperationBySymbol(const char *symbol);
 const Variable      *findWordInTable      (Differentiator *diff, const Variable *word);
 
-diffError       differentiateExpression	  (Differentiator *diff, Differentiator *newDiff, char varIndex);
-node<diffNode> *differentiateNode	   	    (Differentiator *diff, Differentiator *newDiff, node<diffNode> **rootNode, char varIndex);
+diffError       differentiateExpression	  (Differentiator *diff, Differentiator *newDiff, char varIndex, FILE *latexStream);
+node<diffNode> *differentiateNode	   	    (Differentiator *diff, Differentiator *newDiff, node<diffNode> **rootNode, char varIndex, FILE *latexStream);
 
 // FUNCTION FOR NODES //
 node<diffNode> *diffNodeCreate(node<diffNode> nodeData);

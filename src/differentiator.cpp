@@ -6,6 +6,7 @@
 #include "diffDump.h"
 #include "colorPrint.h"
 #include "simplifyTree.h"
+#include "latex.h"
 
 static const size_t MAX_VARIABLE_COUNT = 3;
 
@@ -34,6 +35,9 @@ diffError diffInitialize(Differentiator *diff, int argc, char *argv[], const cha
 
     diffTablesInitialize(diff);
 
+    diff->latexPath = (char *)calloc(MAX_DUMP_FILE_NAME, sizeof(char));
+    customWarning(diff->latexPath != NULL, BAD_ALLOCATION);
+
     return NO_DIFF_ERRORS;
 }
 
@@ -45,6 +49,8 @@ diffError diffDestruct(Differentiator *diff) {
     
     treeDestruct          (&diff->diffTree);
     
+    FREE_(diff->latexPath);
+
     return NO_DIFF_ERRORS;
 }
 
@@ -132,7 +138,7 @@ diffError evalTree(Differentiator *diff, double *value) {
     return NO_DIFF_ERRORS;
 }
 
-diffError differentiateExpression(Differentiator *diff, Differentiator *newDiff, char varIndex) {
+diffError differentiateExpression(Differentiator *diff, Differentiator *newDiff, char varIndex, FILE *latexStream) {
     customWarning(diff    != NULL, DIFF_NULL_PTR);
     customWarning(newDiff != NULL, DIFF_NULL_PTR);
     
@@ -152,25 +158,31 @@ diffError differentiateExpression(Differentiator *diff, Differentiator *newDiff,
     FREE_(newDiff->diffTree.root);
 
     newDiff->diffTree.root = (node<diffNode> *)calloc(1, sizeof(node<diffNode>));
-    newDiff->diffTree.root = differentiateNode(diff, newDiff, &diff->diffTree.root, varIndex);
+    newDiff->diffTree.root = differentiateNode(diff, newDiff, &diff->diffTree.root, varIndex, latexStream);
 
     return NO_DIFF_ERRORS;
 }   
 
-node<diffNode> *differentiateNode(Differentiator *diff, Differentiator *newDiff, node<diffNode> **rootNode, char varIndex) {
+node<diffNode> *differentiateNode(Differentiator *diff, Differentiator *newDiff, node<diffNode> **rootNode, char varIndex, FILE *latexStream) {
     customWarning(diff                   != NULL, NULL);
     customWarning(newDiff                != NULL, NULL);
     customWarning((*rootNode)            != NULL, NULL);
 
+    node<diffNode> *currentNode = NULL;
+
     if ((*rootNode)->data.type == NUMERICAL_NODE || ((*rootNode)->data.type == VARIABLE_NODE && (*rootNode)->data.nodeValue.varIndex != varIndex)) {
-        return CONST_(0);
+        currentNode = CONST_(0);
+        writePhrase    (derivatePhrase, latexStream, PHRASES_COUNT);
+        writeDerivating((*rootNode), "$$(", ")'");
+        writeDerivating(currentNode, " = ", "$$\n");
     }
 
     if ((*rootNode)->data.type == VARIABLE_NODE && (*rootNode)->data.nodeValue.varIndex == varIndex) {
-        return CONST_(1);
+        currentNode = CONST_(1);
+        writePhrase    (derivatePhrase, latexStream, PHRASES_COUNT);
+        writeDerivating((*rootNode), "$$(", ")'");
+        writeDerivating(currentNode, " = ", "$$\n");
     }
-
-    node<diffNode> *currentNode = NULL;
 
     #define OPERATOR(NAME, SYMBOL, PRIORITY, EVAL_FUNCTION, DIFF_FUNCTION, ...)               \
         if ((*rootNode)->data.nodeValue.op == NAME) {                                         \
@@ -183,13 +195,16 @@ node<diffNode> *differentiateNode(Differentiator *diff, Differentiator *newDiff,
                 currentNode->right->parent = currentNode;                                     \
             }                                                                                 \
                                                                                               \
+            writePhrase    (derivatePhrase, latexStream, PHRASES_COUNT);                      \
+            writeDerivating((*rootNode), "$$(", ")'");                                        \
+            writeDerivating(currentNode, " = ", "$$\n");                                      \
+                                                                                              \
             DIFF_DUMP_(&newDiff->diffTree);                                                   \
-            return currentNode;                                                               \
         }                                                                    
 
     #include "diffOperations.def"
 
     #undef OPERATOR
 
-    return NULL;
+    return currentNode;
 }

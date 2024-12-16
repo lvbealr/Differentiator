@@ -12,6 +12,11 @@ enum zeroComparisonCode {
     DOUBLE_GREATER_EPS = 2
 };
 
+enum functionStatus {
+    MAIN_FUNCTION       = 0,
+    DERIVATIVE_FUNCTION = 1
+};
+
 const double EPS = 1e-9;
 
 // FUNCTION PROTOTYPES //
@@ -20,7 +25,7 @@ zeroComparisonCode zeroComparison(double x);
 binaryTreeError destructSubtree(node<diffNode> **formerNode);
 simplifyError   replaceNode    (Differentiator *diff, node<diffNode> **formerNode, node<diffNode> *futureNode);
 
-simplifyError simplifyTree   (Differentiator *diff);
+simplifyError simplifyTree   (Differentiator *diff, FILE *latexStream, functionStatus funcStatus);
 simplifyError simplifySubtree(Differentiator *diff, node<diffNode> **currentNode, size_t *simplificationsNumber);
 // FUNCTION PROTOTYPES //
 

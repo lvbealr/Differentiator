@@ -4,6 +4,7 @@
 #include "customWarning.h"
 #include "colorPrint.h"
 #include "diffDump.h"
+#include "latex.h"
 
 #define NDEBUG
 
@@ -109,12 +110,29 @@ simplifyError replaceNode(Differentiator *diff, node<diffNode> **formerNode, nod
     return NO_SIMPLIFY_ERRORS;
 }
 
-simplifyError simplifyTree(Differentiator *simpDiff) {
+simplifyError simplifyTree(Differentiator *simpDiff, FILE *latexStream, functionStatus funcStatus) {
     customWarning(simpDiff != NULL, (simplifyError) TREE_NULL_POINTER);
 
     $PRINT_FUNC();
 
     size_t simplificationsNumber = {};
+
+    if (funcStatus == MAIN_FUNCTION) {
+        fprintf             (latexStream, "%s\n", introduction);
+        fprintf             (latexStream, "\\newpage \\section*{Имеем}");
+        fprintf             (latexStream, "$$ f(x) = ");
+        internalWriteToLatex(simpDiff, simpDiff->diffTree.root, latexStream);
+        fprintf             (latexStream, "$$\n");
+        fprintf             (latexStream, "\\section*{это все, что я имею, физтешку пока себе не нашел :(( \\\\}");
+    }
+
+    else if (funcStatus == DERIVATIVE_FUNCTION) {
+        fprintf             (latexStream, "\\hline \\vspace{1cm} \\\\\n");
+        fprintf             (latexStream, "\\section*{Хуясе крокодил! Надо бы преобразовать}\\\\\n");
+        fprintf             (latexStream, "$$ f'(x) = ");
+        internalWriteToLatex(simpDiff, simpDiff->diffTree.root, latexStream);
+        fprintf             (latexStream, "$$\\\\\n");
+    }
 
     do {
         simplificationsNumber = 0;
@@ -122,6 +140,13 @@ simplifyError simplifyTree(Differentiator *simpDiff) {
         simplifySubtree(simpDiff, &(simpDiff->diffTree.root), &simplificationsNumber);
         DIFF_DUMP_(&simpDiff->diffTree);
     } while (simplificationsNumber != 0);
+
+    if (funcStatus == DERIVATIVE_FUNCTION) {
+        fprintf             (latexStream, "\\textbf{После несложных упрощений получаем: }\\\\\n");
+        fprintf             (latexStream, "$$ f'(x) = ");
+        internalWriteToLatex(simpDiff, simpDiff->diffTree.root, latexStream);
+        fprintf             (latexStream, "$$\\\\\n");
+    }
 
     return NO_SIMPLIFY_ERRORS;
 }
@@ -155,7 +180,7 @@ simplifyError simplifySubtree(Differentiator *diff, node<diffNode> **rootNode, s
                                                                            LEFT_ONE_SIMPLIFICATION,              \
                                                                            RIGHT_ONE_SIMPLIFICATION,             \
                                                                            LEFT_MINUS_ONE_SIMPLIFICATION,        \
-                                                                           RIGHT_MINUS_ONE_SIMPLIFICATION)       \
+                                                                           RIGHT_MINUS_ONE_SIMPLIFICATION, ...)  \
                                                                                                                  \
     if ((*rootNode)->data.type == OPERATION_NODE && (*rootNode)->data.nodeValue.op == NAME) {                    \
         if ((*rootNode)->left) {                                                                                 \

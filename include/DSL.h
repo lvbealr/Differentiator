@@ -6,7 +6,7 @@
 
 // MACROS //    
 #define EVAL_SUBTREE_(subtree)                         evalInternal     (diff, subtree)
-#define DIFF_(direction)                               differentiateNode(diff, newDiff, direction, 'x')
+#define DIFF_(direction)                               differentiateNode(diff, newDiff, direction, 'x', latexStream)
 #define COPY_(subtreeRoot)                             copySubtree      (subtreeRoot)
 
 #define CONST_(number)                                 diffNodeCreate(node<diffNode> {.data       = {.type = NUMERICAL_NODE, \

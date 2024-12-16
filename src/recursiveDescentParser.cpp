@@ -7,9 +7,9 @@
 #include "lexer.h"
 #include "diffDump.h"
 
-#define _NDEBUG
+#define NDEBUG
 
-#ifndef _NDEBUG
+#ifndef NDEBUG
     #define $CHECK_POINTER()  {customPrint(yellow,    bold, bgDefault, "[CHECKER]: ");                                                \
                                customPrint(lightblue, bold, bgDefault, "(%s), (%p), (%lu), \"%s\"\n",                                 \
                                                                         __PRETTY_FUNCTION__,                                          \

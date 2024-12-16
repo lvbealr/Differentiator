@@ -1,0 +1,65 @@
+\documentclass{article}
+\usepackage[english, russian]{babel}
+\usepackage[a4paper,top=2cm,bottom=2cm,left=1cm,right=1cm,marginparwidth=1.75cm]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{setspace}
+\usepackage{dashbox}
+\begin{document}
+\begin{Large}
+\begin{onehalfspace}
+\begin{center}
+\section*{\huge ЭКЗАМЕНАЦИОННАЯ РАБОТА}
+\subsection*{\large Дисциплина \framebox{Введение в математический анализ}}
+\subsection*{Курс \framebox{1} Семестр \framebox{1} 2024-2025 учебный год}
+\subsection*{Фамилия и имя студента \underline{Зубаха Максим}\ \hspace{2cm} № группы \underline{Б05-431}}
+\begin{tabular}{|c|c|}
+\hline 
+Сумма баллов & \hspace{8cm} \\ 
+\hline 
+Оценка & \hspace{8cm} \\ 
+\hline 
+\end{tabular} 
+\vspace{1cm} 
+\hline 
+\end{center} 
+\begin{large} 
+\begin{enumerate} 
+\item Найти $y^{(n)}$ при $n \geq 3$. $$y = (x^2 - x + 1)\ln(7-2x)$$ 
+\hline 
+\item Разложить функцию по формуле Тейлора при $x \rightarrow -1$ до $o((x + 1)^{2n+1})$. $$y = (3x^2 + 6x + 5)e^{2x^2+4x-1}$$ 
+\hline 
+\item Найти предел. $$\lim\limits_{x \rightarrow 0}(\frac{3}{2} \cdot \frac{\sin{x^2} - \sin^2 x}{e^{x^2} - 1 - x^2})^{\frac{1}{\ch x - 1}}$$ 
+\hline 
+\item Вычислить производную, ответ упростить. 
+$$ f(x) = \cos(x^{3})^{\ln(2 \cdot x)}$$\ \hline \
+\end{enumerate}
+\end{large}
+$$ f(x) = \cos(x^{3})^{\ln(2 \cdot x)}$$\\
+\section*{Такое уже встречалось в дебильнике по матану:}
+$$(2)' = 0$$
+\section*{Да, мне было страшно... Но я это сделал:}
+$$(x)' = 1$$
+\section*{Витамин С поможет понять тебе, что}
+$$(2 \cdot x)' = 0 \cdot x + 2 \cdot 1$$
+\section*{Ну это пиздец какой-то просто, ну сколько можно!}
+$$(\ln(2 \cdot x))' = \frac{0 \cdot x + 2 \cdot 1}{2 \cdot x}$$
+\section*{Любой советский эмбрион знает, что}
+$$(x)' = 1$$
+\section*{Любой советский эмбрион знает, что}
+$$(x^{3})' = 3 \cdot x^{2} \cdot 1$$
+\section*{Небольшой финт ушами...}
+$$(\cos(x^{3}))' = 3 \cdot x^{2} \cdot 1 \cdot -1 \cdot \sin(x^{3})$$
+\section*{Это было не просто смело, это было пиздец как смело}
+$$(\cos(x^{3})^{\ln(2 \cdot x)})' = e^{\ln(2 \cdot x) \cdot \ln(\cos(x^{3}))} \cdot \frac{0 \cdot x + 2 \cdot 1}{2 \cdot x} \cdot \ln(\cos(x^{3})) + \frac{3 \cdot x^{2} \cdot 1 \cdot -1 \cdot \sin(x^{3})}{\cos(x^{3})} \cdot \ln(2 \cdot x)$$
+\hline \vspace{1cm} \\
+\textbf{Хуясе крокодил! Надо бы преобразовать}\\
+$$ f'(x) = e^{\ln(2 \cdot x) \cdot \ln(\cos(x^{3}))} \cdot \frac{0 \cdot x + 2 \cdot 1}{2 \cdot x} \cdot \ln(\cos(x^{3})) + \frac{3 \cdot x^{2} \cdot 1 \cdot -1 \cdot \sin(x^{3})}{\cos(x^{3})} \cdot \ln(2 \cdot x)$$\\
+\textbf{После несложных упрощений получаем: }\\
+$$ f'(x) = e^{\ln(2 \cdot x) \cdot \ln(\cos(x^{3}))} \cdot \frac{2}{2 \cdot x} \cdot \ln(\cos(x^{3})) + \frac{3 \cdot x^{2} \cdot -1 \cdot \sin(x^{3})}{\cos(x^{3})} \cdot \ln(2 \cdot x)$$\\
+\end{onehalfspace}
+\end{Large}
+\end{document}

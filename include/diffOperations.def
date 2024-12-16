@@ -1,13 +1,13 @@
 OPERATOR(OPEN_BRACKET, "(", 0,
 	{{}},
 	{{}},
-	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}
+	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}, {{}}
 	)
 
 OPERATOR(CLOSE_BRACKET, ")", 0,
 	{{}},
 	{{}},
-	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}
+	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}, {{}}
 	)
 
 OPERATOR(POW, "^", 1,
@@ -46,7 +46,18 @@ OPERATOR(POW, "^", 1,
 	{++(*simplificationsNumber); replaceNode(diff, rootNode, CONST_(1));},
 	{++(*simplificationsNumber); replaceNode(diff, rootNode, (*rootNode)->left);},
 	{{}},
-	{++(*simplificationsNumber); replaceNode(diff, rootNode, DIV_(CONST_(1), COPY_((*rootNode)->left)));}
+	{++(*simplificationsNumber); replaceNode(diff, rootNode, DIV_(CONST_(1), COPY_((*rootNode)->left)));},
+	{
+		if (rootNode->left) {
+			internalWriteToLatex(diff, rootNode->left, latexStream);
+			fprintf(latexStream, "^{");
+		}
+
+		if (rootNode->right) {
+			internalWriteToLatex(diff, rootNode->right, latexStream);
+			fprintf(latexStream, "}");
+		}
+	}
 	)
 
 OPERATOR(SIN, "sin", 2,
@@ -54,7 +65,7 @@ OPERATOR(SIN, "sin", 2,
 	{currentNode = MUL_(
 				DIFF_(&(*rootNode)->left),
 				COS_(COPY_((*rootNode)->left), NULL));},
-	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}
+	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}, {writeUnaryOperation("\\sin", "(", ")");}
 	)
 
 OPERATOR(COS, "cos", 2,
@@ -62,7 +73,7 @@ OPERATOR(COS, "cos", 2,
 	{currentNode = MUL_(
 				DIFF_(&(*rootNode)->left),
 				MUL_(CONST_(-1), SIN_(COPY_((*rootNode)->left), NULL)));},
-	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}
+	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}, {writeUnaryOperation("\\cos", "(", ")");}
 	)
 
 OPERATOR(SQRT, "sqrt", 2,
@@ -70,19 +81,19 @@ OPERATOR(SQRT, "sqrt", 2,
 	{currentNode = DIV_(
 				DIFF_(&(*rootNode)->left),
 				MUL_(CONST_(2), SQRT_(COPY_((*rootNode)->left), NULL)));},
-	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}
+	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}, {writeUnaryOperation("\\sqrt", "{", "}");}
 	)
 
 OPERATOR(LN, "ln", 2,
 	{evalValue   = log(EVAL_SUBTREE_(&(*rootNode)->left)); replaceNode(diff, rootNode, CONST_(evalValue));},
 	{currentNode = DIV_(DIFF_(&(*rootNode)->left), COPY_((*rootNode)->left));},
-	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}
+	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}, {writeUnaryOperation("\\ln", "(", ")");}
 	)
 
 OPERATOR(EXP, "exp", 2,
 	{evalValue   = exp(EVAL_SUBTREE_(&(*rootNode)->left)); replaceNode(diff, rootNode, CONST_(evalValue));},
 	{currentNode = MUL_(DIFF_(&(*rootNode)->left), EXP_(COPY_((*rootNode)->left), NULL));},
-	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}
+	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}, {writeUnaryOperation("e^", "{", "}");}
 	)
 
 OPERATOR(MUL, "*", 3,
@@ -95,7 +106,8 @@ OPERATOR(MUL, "*", 3,
 	{++(*simplificationsNumber); replaceNode(diff, rootNode, (*rootNode)->right);},
 	{++(*simplificationsNumber); replaceNode(diff, rootNode, (*rootNode)->left);},
 	{{}},
-	{{}}
+	{{}},
+	{writeBinaryOperation(" \\cdot ");}
 	)
 
 OPERATOR(DIV, "/", 3,
@@ -110,7 +122,19 @@ OPERATOR(DIV, "/", 3,
 	{{}},
 	{++(*simplificationsNumber); replaceNode(diff, rootNode, (*rootNode)->left);},
 	{{}},
-	{++(*simplificationsNumber); replaceNode(diff, rootNode, MUL_(CONST_(-1), COPY_((*rootNode)->left)));}
+	{++(*simplificationsNumber); replaceNode(diff, rootNode, MUL_(CONST_(-1), COPY_((*rootNode)->left)));},
+	{
+		fprintf(latexStream, "\\frac{");
+		if (rootNode->left) {
+			internalWriteToLatex(diff, rootNode->left, latexStream);
+		}
+		
+		fprintf(latexStream, "}{");
+		if (rootNode->right) {
+			internalWriteToLatex(diff, rootNode->right, latexStream);
+		}
+		fprintf(latexStream, "}");
+	}
 	)
 
 OPERATOR(ADD, "+", 4,
@@ -122,7 +146,8 @@ OPERATOR(ADD, "+", 4,
 	{{}},
 	{{}},
 	{{}},
-	{{}}
+	{{}},
+	{writeBinaryOperation(" + ");}
 	)
 
 OPERATOR(SUB, "-", 4,
@@ -134,11 +159,12 @@ OPERATOR(SUB, "-", 4,
 	{{}},
 	{{}},
 	{{}},
-	{{}}
+	{{}},
+	{writeBinaryOperation(" - ");}
 	)
 
 OPERATOR(EQUALS, "=", 4,
 	{evalValue   = EVAL_SUBTREE_(&(*rootNode)->left); replaceNode(diff, rootNode, CONST_(evalValue));},
 	{currentNode = OPERATION_NODE_(DIFF_(&(*rootNode)->left), NULL, EQUALS);},
-	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}
+	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}, {{}}
 	)
