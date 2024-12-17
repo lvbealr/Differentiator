@@ -85,6 +85,8 @@ struct Buffer {
   size_t textSize = {};
 };
 
+// TODO move to recursiveDescentParser.h
+
 typedef nodeType tokenType;
 
 struct Token {

@@ -20,7 +20,7 @@
     node<diffNode> *parentNode = (*formerNode)->parent;   \
     DIFF_DUMP_(&(diff->diffTree));                        \
     destructSubtree(formerNode);                          \
-    nodeLink(&(diff->diffTree), parentNode, direction  ); \
+    nodeLink(&(diff->diffTree), parentNode, direction);   \
                                                           \
     switch (direction) {                                  \
         case LEFT:                                        \

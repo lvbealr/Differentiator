@@ -1,0 +1,29 @@
+#define EVAL
+#define DIFF
+
+#define LEFT_0
+#define LEFT_1
+#define RIGHT_0
+#define RIGHT_1
+#define LEFT_NEG_1
+#define RIGHT_NEG_1
+
+#define LEFT_N  (rootNode->left)
+#define RIGHT_N (rootNode->right)
+
+#define LEFT_P  ((*rootNode)->left)
+#define RIGHT_P ((*rootNode)->right)
+
+#define LATEX
+#define L_PRINT(string) 				 fprintf(latexStream, string)
+#define T_PRINT(WHERE)  				 internalWriteToLatex(diff, WHERE, latexStream)
+#define L_UNARY( OP, LBRACKET, RBRACKET) writeUnaryOperation (OP, LBRACKET, RBRACKET)
+#define L_BINARY(OP) 					 writeBinaryOperation(OP)
+
+#define NONE
+#define I_MADE_CHANGES    ++(*simplificationsNumber)
+#define YOU_MADE_CHANGES  ++(*simplificationsNumber)
+#define HE_MADE_CHANGES	  ++(*simplificationsNumber)
+#define SHE_MADE_CHANGES  ++(*simplificationsNumber)
+#define WE_MADE_CHANGES   ++(*simplificationsNumber)
+#define THEY_MADE_CHANGES ++(*simplificationsNumber)

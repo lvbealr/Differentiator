@@ -54,7 +54,7 @@ node<diffNode> *copySubtree(node<diffNode> *subtreeRoot) {
 
     customWarning(newSubtreeRoot != NULL, NULL);
     
-    newSubtreeRoot->data       = subtreeRoot->data;
+    newSubtreeRoot->data = subtreeRoot->data;
 
     #define copySubtreeNode(direction) {                                             \
         if (subtreeRoot->direction) {                                                \

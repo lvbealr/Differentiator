@@ -1,170 +1,248 @@
+#include "supDefines.def"
+
+// OPERATOR(NAME, SYMBOL, PRIORITY, EVAL_FUNCTION, DIFF_FUNCTION, 	    LEFT_ZERO_SIMPLIFICATION,
+//																  	   RIGHT_ZERO_SIMPLIFICATION,
+//																  		 LEFT_ONE_SIMPLIFICATION,
+//																   	    RIGHT_ONE_SIMPLIFICATION,
+// 																   	 LEFT_NEG_ONE_SIMPLIFICATION,
+// 																  	RIGHT_NEG_ONE_SIMPLIFICATION,
+//																  				  LATEX_FUNCTION)
+
 OPERATOR(OPEN_BRACKET, "(", 0,
-	{{}},
-	{{}},
-	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}, {{}}
+	{NONE;},
+	{NONE;},
+	{NONE;},
+	{NONE;},
+	{NONE;},
+	{NONE;},
+	{NONE;},
+	{NONE;},
+	{NONE;}
 	)
 
 OPERATOR(CLOSE_BRACKET, ")", 0,
-	{{}},
-	{{}},
-	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}, {{}}
+	{NONE;},
+	{NONE;},
+	{NONE;},
+	{NONE;},
+	{NONE;},
+	{NONE;},
+	{NONE;},
+	{NONE;},
+	{NONE;}
 	)
 
 OPERATOR(POW, "^", 1,
-	{evalValue   = pow(EVAL_SUBTREE_(&(*rootNode)->left), EVAL_SUBTREE_(&(*rootNode)->right)); replaceNode(diff, rootNode, CONST_(evalValue));},
-	{	if ((*rootNode)->left->data.type != NUMERICAL_NODE && (*rootNode)->right->data.type != NUMERICAL_NODE) {
-		currentNode = MUL_(
-							EXP_(
-								MUL_(COPY_((*rootNode)->right), LN_(COPY_((*rootNode)->left), NULL)), NULL), 
-								ADD_(
-									MUL_(DIFF_(&(*rootNode)->right), LN_(COPY_((*rootNode)->left), NULL)), 
-									MUL_(DIV_(DIFF_(&(*rootNode)->left), COPY_((*rootNode)->left)),
-							COPY_((*rootNode)->right))) );
-	}
+	EVAL   {evalValue   = pow(EVAL_SUBTREE_(&LEFT_P), EVAL_SUBTREE_(&RIGHT_P)); replaceNode(diff, rootNode, CONST_(evalValue));},
+	DIFF   {if (LEFT_P->data.type != NUMERICAL_NODE && RIGHT_P->data.type != NUMERICAL_NODE) {
+			currentNode = MUL_(
+								EXP_(
+									MUL_(COPY_(RIGHT_P), LN_(COPY_(LEFT_P), NULL)), NULL), 
+									ADD_(
+										MUL_(DIFF_(&RIGHT_P), LN_(COPY_(LEFT_P), NULL)), 
+										MUL_(DIV_(DIFF_(&LEFT_P), COPY_(LEFT_P)),
+								COPY_(RIGHT_P))) );
+			}
 
-		else if ((*rootNode)->right->data.type == NUMERICAL_NODE) {
-			currentNode = MUL_(MUL_(
-								COPY_((*rootNode)->right),
-								POW_(
-									COPY_((*rootNode)->left),
-									CONST_((*rootNode)->right->data.nodeValue.value - 1)
-									)),
-							   DIFF_(&(*rootNode)->left));
-		}
+			else if (RIGHT_P->data.type == NUMERICAL_NODE) {
+				currentNode = MUL_(MUL_(
+									COPY_(RIGHT_P),
+									POW_(
+										COPY_(LEFT_P),
+										CONST_(RIGHT_P->data.nodeValue.value - 1)
+										)),
+								   DIFF_(&LEFT_P));
+			}
 
-		else if ((*rootNode)->left->data.type == NUMERICAL_NODE) {
-			currentNode = MUL_(POW_(
-									COPY_((*rootNode)->left),
-									COPY_((*rootNode)->right)
-									),
-							   LN_(COPY_((*rootNode)->left), NULL));
-		}
+			else if (LEFT_P->data.type == NUMERICAL_NODE) {
+				currentNode = MUL_(POW_(
+										COPY_(LEFT_P),
+										COPY_(RIGHT_P)
+										),
+								   LN_(COPY_(LEFT_P), NULL));
+			}
 	},
 
-	{++(*simplificationsNumber); replaceNode(diff, rootNode, CONST_(0));},
-	{++(*simplificationsNumber); replaceNode(diff, rootNode, CONST_(1));},
-	{++(*simplificationsNumber); replaceNode(diff, rootNode, CONST_(1));},
-	{++(*simplificationsNumber); replaceNode(diff, rootNode, (*rootNode)->left);},
-	{{}},
-	{++(*simplificationsNumber); replaceNode(diff, rootNode, DIV_(CONST_(1), COPY_((*rootNode)->left)));},
-	{
-		if (rootNode->left) {
-			internalWriteToLatex(diff, rootNode->left, latexStream);
-			fprintf(latexStream, "^{");
-		}
+	LEFT_0 		{I_MADE_CHANGES;    replaceNode(diff, rootNode, CONST_(0));						},
+	RIGHT_0 	{YOU_MADE_CHANGES;  replaceNode(diff, rootNode, CONST_(1));						},
+	LEFT_1 		{HE_MADE_CHANGES;   replaceNode(diff, rootNode, CONST_(1));						},
+	RIGHT_1 	{SHE_MADE_CHANGES;  replaceNode(diff, rootNode, LEFT_P);					    },
+	LEFT_NEG_1  {NONE;																			},
+	RIGHT_NEG_1 {THEY_MADE_CHANGES; replaceNode(diff, rootNode, DIV_(CONST_(1), COPY_(LEFT_P)));},
 
-		if (rootNode->right) {
-			internalWriteToLatex(diff, rootNode->right, latexStream);
-			fprintf(latexStream, "}");
-		}
-	}
-	)
+	LATEX {
+			if (LEFT_N) {
+				T_PRINT(LEFT_N);
+				L_PRINT("^{");
+			}
+
+			if (RIGHT_N) {
+				T_PRINT(RIGHT_N);
+				L_PRINT("}");
+			}
+		})
 
 OPERATOR(SIN, "sin", 2,
-	{evalValue   = sin(EVAL_SUBTREE_(&(*rootNode)->left)); replaceNode(diff, rootNode, CONST_(evalValue));},
-	{currentNode = MUL_(
-				DIFF_(&(*rootNode)->left),
-				COS_(COPY_((*rootNode)->left), NULL));},
-	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}, {writeUnaryOperation("\\sin", "(", ")");}
+	EVAL {evalValue   = sin(EVAL_SUBTREE_(&LEFT_P)); replaceNode(diff, rootNode, CONST_(evalValue));},
+	DIFF {currentNode = MUL_(
+							DIFF_(&LEFT_P),
+							COS_(COPY_(LEFT_P), NULL));},
+
+	LEFT_0      { NONE;					      },
+	RIGHT_0     { NONE;					      },
+	LEFT_1      { NONE;					      },
+	RIGHT_1     { NONE;					      },
+	LEFT_NEG_1  { NONE;					      },
+	RIGHT_NEG_1 { NONE;					      },
+
+	LATEX 		{ L_UNARY("\\sin", "(", ")"); }
 	)
 
+
 OPERATOR(COS, "cos", 2,
-	{evalValue   = cos(EVAL_SUBTREE_(&(*rootNode)->left)); replaceNode(diff, rootNode, CONST_(evalValue));},
-	{currentNode = MUL_(
-				DIFF_(&(*rootNode)->left),
-				MUL_(CONST_(-1), SIN_(COPY_((*rootNode)->left), NULL)));},
-	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}, {writeUnaryOperation("\\cos", "(", ")");}
+	EVAL {evalValue   = cos(EVAL_SUBTREE_(&LEFT_P)); replaceNode(diff, rootNode, CONST_(evalValue));},
+	DIFF {currentNode = MUL_(
+							DIFF_(&LEFT_P),
+			  				MUL_(CONST_(-1), SIN_(COPY_(LEFT_P), NULL)));},
+
+	LEFT_0      { NONE;					      },
+	RIGHT_0     { NONE;					      },
+	LEFT_1      { NONE;					      },
+	RIGHT_1     { NONE;					      },
+	LEFT_NEG_1  { NONE;					      },
+	RIGHT_NEG_1 { NONE;					      },
+
+	LATEX 		{ L_UNARY("\\cos", "(", ")"); }
 	)
 
 OPERATOR(SQRT, "sqrt", 2,
-	{evalValue   = sqrt(EVAL_SUBTREE_(&(*rootNode)->left)); replaceNode(diff, rootNode, CONST_(evalValue));},
-	{currentNode = DIV_(
-				DIFF_(&(*rootNode)->left),
-				MUL_(CONST_(2), SQRT_(COPY_((*rootNode)->left), NULL)));},
-	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}, {writeUnaryOperation("\\sqrt", "{", "}");}
+	EVAL {evalValue   = sqrt(EVAL_SUBTREE_(&LEFT_P)); replaceNode(diff, rootNode, CONST_(evalValue));},
+	DIFF {currentNode = DIV_(
+							DIFF_(&LEFT_P),
+							MUL_(CONST_(2), SQRT_(COPY_(LEFT_P), NULL)));},
+
+	LEFT_0      { NONE;					      },
+	RIGHT_0     { NONE;					      },
+	LEFT_1      { NONE;					      },
+	RIGHT_1     { NONE;					      },
+	LEFT_NEG_1  { NONE;					      },
+	RIGHT_NEG_1 { NONE;					      },
+
+	LATEX 		{ L_UNARY("\\sqrt", "{", "}");}
 	)
 
 OPERATOR(LN, "ln", 2,
-	{evalValue   = log(EVAL_SUBTREE_(&(*rootNode)->left)); replaceNode(diff, rootNode, CONST_(evalValue));},
-	{currentNode = DIV_(DIFF_(&(*rootNode)->left), COPY_((*rootNode)->left));},
-	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}, {writeUnaryOperation("\\ln", "(", ")");}
+	EVAL {evalValue   = log(EVAL_SUBTREE_(&(*rootNode)->left)); replaceNode(diff, rootNode, CONST_(evalValue));},
+	DIFF {currentNode = DIV_(DIFF_(&(*rootNode)->left), COPY_((*rootNode)->left));},
+
+	LEFT_0      { NONE;					    },
+	RIGHT_0     { NONE;					    },
+	LEFT_1      { NONE;					    },
+	RIGHT_1     { NONE;					    },
+	LEFT_NEG_1  { NONE;					    },
+	RIGHT_NEG_1 { NONE;					    },
+
+	LATEX 		{ L_UNARY("\\ln", "(", ")");}
 	)
 
 OPERATOR(EXP, "exp", 2,
-	{evalValue   = exp(EVAL_SUBTREE_(&(*rootNode)->left)); replaceNode(diff, rootNode, CONST_(evalValue));},
-	{currentNode = MUL_(DIFF_(&(*rootNode)->left), EXP_(COPY_((*rootNode)->left), NULL));},
-	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}, {writeUnaryOperation("e^", "{", "}");}
+	EVAL {evalValue   = exp(EVAL_SUBTREE_(&(*rootNode)->left)); replaceNode(diff, rootNode, CONST_(evalValue));},
+	DIFF {currentNode = MUL_(DIFF_(&(*rootNode)->left), EXP_(COPY_((*rootNode)->left), NULL));},
+
+	LEFT_0      { NONE;					  },
+	RIGHT_0     { NONE;					  },
+	LEFT_1      { NONE;					  },
+	RIGHT_1     { NONE;					  },
+	LEFT_NEG_1  { NONE;					  },
+	RIGHT_NEG_1 { NONE;					  },
+
+	LATEX 		{ L_UNARY("e^", "{", "}");}
 	)
 
 OPERATOR(MUL, "*", 3,
-	{evalValue   = EVAL_SUBTREE_(&(*rootNode)->left) * EVAL_SUBTREE_(&(*rootNode)->right); replaceNode(diff, rootNode, CONST_(evalValue));},
-	{currentNode = ADD_(
-				MUL_(DIFF_(&(*rootNode)->left), COPY_((*rootNode)->right)),
-				MUL_(COPY_((*rootNode)->left), DIFF_(&(*rootNode)->right)));},
-	{++(*simplificationsNumber); replaceNode(diff, rootNode, CONST_(0));},
-	{++(*simplificationsNumber); replaceNode(diff, rootNode, CONST_(0));},
-	{++(*simplificationsNumber); replaceNode(diff, rootNode, (*rootNode)->right);},
-	{++(*simplificationsNumber); replaceNode(diff, rootNode, (*rootNode)->left);},
-	{{}},
-	{{}},
-	{writeBinaryOperation(" \\cdot ");}
-	)
+	EVAL {evalValue   = EVAL_SUBTREE_(&LEFT_P) * EVAL_SUBTREE_(&RIGHT_P); replaceNode(diff, rootNode, CONST_(evalValue));},
+	DIFF {currentNode = ADD_(
+							MUL_(DIFF_(&LEFT_P), COPY_(RIGHT_P)),
+							MUL_(COPY_(LEFT_P), DIFF_(&RIGHT_P)));},
+
+	LEFT_0      { I_MADE_CHANGES;   replaceNode(diff, rootNode, CONST_(0));			},
+	RIGHT_0     { YOU_MADE_CHANGES; replaceNode(diff, rootNode, CONST_(0));			},
+	LEFT_1      { HE_MADE_CHANGES;  replaceNode(diff, rootNode, RIGHT_P);			},
+	RIGHT_1     { SHE_MADE_CHANGES; replaceNode(diff, rootNode, LEFT_P);		    },
+	LEFT_NEG_1  { NONE;			      												},
+	RIGHT_NEG_1 { NONE;			      												},
+
+	LATEX 		{ L_BINARY(" \\cdot "); 											})
 
 OPERATOR(DIV, "/", 3,
-	{evalValue   = EVAL_SUBTREE_(&(*rootNode)->left) / EVAL_SUBTREE_(&(*rootNode)->right); replaceNode(diff, rootNode, CONST_(evalValue));},
-	{currentNode = DIV_(
-				SUB_(
-				MUL_(DIFF_(&(*rootNode)->left), COPY_((*rootNode)->right)),
-				MUL_(COPY_((*rootNode)->left), DIFF_(&(*rootNode)->right))),
-				POW_(COPY_((*rootNode)->right), CONST_(2)));},
-	{++(*simplificationsNumber); replaceNode(diff, rootNode, CONST_(0));},
-	{{}},
-	{{}},
-	{++(*simplificationsNumber); replaceNode(diff, rootNode, (*rootNode)->left);},
-	{{}},
-	{++(*simplificationsNumber); replaceNode(diff, rootNode, MUL_(CONST_(-1), COPY_((*rootNode)->left)));},
-	{
-		fprintf(latexStream, "\\frac{");
-		if (rootNode->left) {
-			internalWriteToLatex(diff, rootNode->left, latexStream);
+	EVAL {evalValue   = EVAL_SUBTREE_(&LEFT_P) / EVAL_SUBTREE_(&RIGHT_P); replaceNode(diff, rootNode, CONST_(evalValue));},
+	
+	DIFF {currentNode = DIV_(
+							SUB_(
+							MUL_(DIFF_(&LEFT_P), COPY_(RIGHT_P)),
+							MUL_(COPY_(LEFT_P),  DIFF_(&RIGHT_P))),
+							POW_(COPY_(LEFT_P),  CONST_(2)));},
+	
+	LEFT_0      { I_MADE_CHANGES;    replaceNode(diff, rootNode, CONST_(0));					  },
+	RIGHT_0     { NONE; 																		  },
+	LEFT_1      { NONE; 																		  },
+	RIGHT_1     { SHE_MADE_CHANGES;  replaceNode(diff, rootNode, LEFT_P);					      },
+	LEFT_NEG_1  { NONE; 																		  },
+	RIGHT_NEG_1 { THEY_MADE_CHANGES; replaceNode(diff, rootNode, MUL_(CONST_(-1), COPY_(LEFT_P)));},
+	
+	LATEX {
+		L_PRINT ("\\frac{");
+
+		if (LEFT_N) {
+			T_PRINT (LEFT_N);
 		}
 		
-		fprintf(latexStream, "}{");
-		if (rootNode->right) {
-			internalWriteToLatex(diff, rootNode->right, latexStream);
+		L_PRINT ("}{");
+
+		if (RIGHT_N) {
+			T_PRINT (RIGHT_N);
 		}
-		fprintf(latexStream, "}");
-	}
-	)
+
+		L_PRINT ("}");
+	})
 
 OPERATOR(ADD, "+", 4,
-	{evalValue   = EVAL_SUBTREE_(&(*rootNode)->left) + EVAL_SUBTREE_(&(*rootNode)->right); replaceNode(diff, rootNode, CONST_(evalValue));},
-	{currentNode = ADD_(
-				DIFF_(&(*rootNode)->left), DIFF_(&(*rootNode)->right));},
-	{++(*simplificationsNumber); replaceNode(diff, rootNode, (*rootNode)->right);},
-	{++(*simplificationsNumber); replaceNode(diff, rootNode, (*rootNode)->left);},
-	{{}},
-	{{}},
-	{{}},
-	{{}},
-	{writeBinaryOperation(" + ");}
-	)
+	EVAL {evalValue   = EVAL_SUBTREE_(&LEFT_P) + EVAL_SUBTREE_(&RIGHT_P); replaceNode(diff, rootNode, CONST_(evalValue));},
+	DIFF {currentNode = ADD_(DIFF_(&LEFT_P), DIFF_(&RIGHT_P));},
+
+	LEFT_0   	{I_MADE_CHANGES;   replaceNode(diff, rootNode, RIGHT_P);},
+	RIGHT_0  	{YOU_MADE_CHANGES; replaceNode(diff, rootNode, LEFT_P); },
+	LEFT_1   	{NONE;													},
+	RIGHT_1  	{NONE;													},
+	LEFT_NEG_1  {NONE;													},
+	RIGHT_NEG_1 {NONE;													},
+	
+	LATEX 		{L_BINARY(" + ");						    			})
 
 OPERATOR(SUB, "-", 4,
-	{evalValue   = EVAL_SUBTREE_(&(*rootNode)->left) - EVAL_SUBTREE_(&(*rootNode)->right); replaceNode(diff, rootNode, CONST_(evalValue));},
-	{currentNode = SUB_(
-				DIFF_(&(*rootNode)->left), DIFF_(&(*rootNode)->right));},
-	{++(*simplificationsNumber); replaceNode(diff, rootNode, MUL_(CONST_(-1), COPY_((*rootNode)->right)));},
-	{++(*simplificationsNumber); replaceNode(diff, rootNode, (*rootNode)->left);},
-	{{}},
-	{{}},
-	{{}},
-	{{}},
-	{writeBinaryOperation(" - ");}
+	EVAL {evalValue   = EVAL_SUBTREE_(&LEFT_P) - EVAL_SUBTREE_(&RIGHT_P); replaceNode(diff, rootNode, CONST_(evalValue));},
+	DIFF {currentNode = SUB_(DIFF_(&LEFT_P), DIFF_(&RIGHT_P));},
+
+	LEFT_0 		{I_MADE_CHANGES;   replaceNode(diff, rootNode, MUL_(CONST_(-1), COPY_(RIGHT_P)));},
+	RIGHT_0		{YOU_MADE_CHANGES; replaceNode(diff, rootNode, LEFT_P);							 },
+	LEFT_1      {NONE;																		     },
+	RIGHT_1		{NONE;																		     },
+	LEFT_NEG_1  {NONE;																		     },
+	RIGHT_NEG_1 {NONE;																		     },
+
+	LATEX 	 	{L_BINARY(" - ");																 }
 	)
 
 OPERATOR(EQUALS, "=", 4,
-	{evalValue   = EVAL_SUBTREE_(&(*rootNode)->left); replaceNode(diff, rootNode, CONST_(evalValue));},
-	{currentNode = OPERATION_NODE_(DIFF_(&(*rootNode)->left), NULL, EQUALS);},
-	{{}}, {{}}, {{}}, {{}}, {{}}, {{}}, {{}}
+	EVAL {evalValue   = EVAL_SUBTREE_(&LEFT_P); replaceNode(diff, rootNode, CONST_(evalValue));},
+	DIFF {currentNode = OPERATION_NODE_(DIFF_(&LEFT_P), NULL, EQUALS);},
+
+	LEFT_0      {NONE;},
+	RIGHT_0     {NONE;},
+	LEFT_1      {NONE;},
+	RIGHT_1     {NONE;},
+	LEFT_NEG_1  {NONE;},
+	RIGHT_NEG_1 {NONE;},
+
+	LATEX       {NONE;}
 	)

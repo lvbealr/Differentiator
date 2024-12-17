@@ -32,7 +32,9 @@ FILE *writeToLatex(Differentiator *diff, node<diffNode> *rootNode) {
     FREE_(fileName);
     FREE_(buffer);
 
-    FILE *latexStream = fopen(diff->latexPath, "a"); // TODO CHECK
+    FILE *latexStream = fopen(diff->latexPath, "a"); // TODO CHECK penis size 8===========D------*
+                                                     //                        |<-------->|
+                                                     //                             x
 
     writeHeader(diff, latexStream);
 

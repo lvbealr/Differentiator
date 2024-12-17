@@ -24,11 +24,11 @@ diffError diffInitialize(Differentiator *diff, int argc, char *argv[], const cha
                                                                        int         line) {
     customWarning(diff != NULL, DIFF_NULL_PTR);
 
-    treeInitialize      (&diff->diffTree);
-    treeInfoInitialize  (&diff->diffTree, fileName, funcName, line);
-    bufferInitialize    (diff);
-    parseConsole        (argc, argv, &diff->diffTree);
-    binaryTreeSetInfo   (&diff->diffTree);
+    treeInitialize    (&diff->diffTree);
+    treeInfoInitialize(&diff->diffTree, fileName, funcName, line); // TODO move to treeInfoInitialize()
+    bufferInitialize  (diff);
+    parseConsole      (argc, argv, &diff->diffTree);
+    binaryTreeSetInfo (&diff->diffTree);
     
     setInputFilePath(&diff);
     readFromFile(diff);
@@ -44,10 +44,10 @@ diffError diffInitialize(Differentiator *diff, int argc, char *argv[], const cha
 diffError diffDestruct(Differentiator *diff) {
     customWarning(diff != NULL, DIFF_NULL_PTR);
 
-    diffTablesDestruct    (diff);
-    bufferDestruct        (diff);
-    
-    treeDestruct          (&diff->diffTree);
+    diffTablesDestruct(diff);
+    bufferDestruct    (diff);
+
+    treeDestruct(&diff->diffTree);
     
     FREE_(diff->latexPath);
 
@@ -184,22 +184,22 @@ node<diffNode> *differentiateNode(Differentiator *diff, Differentiator *newDiff,
         writeDerivating(currentNode, " = ", "$$\n");
     }
 
-    #define OPERATOR(NAME, SYMBOL, PRIORITY, EVAL_FUNCTION, DIFF_FUNCTION, ...)               \
-        if ((*rootNode)->data.nodeValue.op == NAME) {                                         \
-            DIFF_FUNCTION                                                                     \
-                                                                                              \
-            if (currentNode->left) {                                                          \
-                currentNode->left->parent  = currentNode;                                     \
-            }                                                                                 \
-            if (currentNode->right) {                                                         \
-                currentNode->right->parent = currentNode;                                     \
-            }                                                                                 \
-                                                                                              \
-            writePhrase    (derivatePhrase, latexStream, PHRASES_COUNT);                      \
-            writeDerivating((*rootNode), "$$(", ")'");                                        \
-            writeDerivating(currentNode, " = ", "$$\n");                                      \
-                                                                                              \
-            DIFF_DUMP_(&newDiff->diffTree);                                                   \
+    #define OPERATOR(NAME, SYMBOL, PRIORITY, EVAL_FUNCTION, DIFF_FUNCTION, ...) \
+        if ((*rootNode)->data.nodeValue.op == NAME) {                           \
+            DIFF_FUNCTION                                                       \
+                                                                                \
+            if (currentNode->left) {                                            \
+                currentNode->left->parent  = currentNode;                       \
+            }                                                                   \
+            if (currentNode->right) {                                           \
+                currentNode->right->parent = currentNode;                       \
+            }                                                                   \
+                                                                                \
+            writePhrase    (derivatePhrase, latexStream, PHRASES_COUNT);        \
+            writeDerivating((*rootNode), "$$(", ")'");                          \
+            writeDerivating(currentNode, " = ", "$$\n");                        \
+                                                                                \
+            DIFF_DUMP_(&newDiff->diffTree);                                     \
         }                                                                    
 
     #include "diffOperations.def"
